@@ -1,0 +1,7 @@
+<div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" style="margin: -20px 0 -10px 0">
+  <h4 cdk-focus-start>{{nomeCognome}}</h4>
+  <mat-label>{{email}}</mat-label>
+  <mat-label>{{ruolo}}</mat-label>
+  <!--<button mat-raised-button class="blue-btn" (click)="openCambioPassword()">Cambia password</button>-->
+  <button mat-raised-button class="blue-btn" [mat-dialog-close]="logout()">Logout</button>
+</div>

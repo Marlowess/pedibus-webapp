@@ -1,0 +1,565 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css');
+
+/*@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';*/
+@import "../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css";
+/*@import '@angular/material/prebuilt-themes/deeppurple-amber.css';*/
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
+.basic-container {
+  padding: 30px;
+}
+
+.version-info {
+  font-size: 12pt;
+  float: right;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  min-height: 550px;
+  min-width: 1280px !important;
+}
+
+.bg-image {
+  /* The image used */
+  background-image: url("app/54wtwertrestrestgersgs2.jpeg");
+  /* Full height */
+  height: 100%;
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+}
+
+
+.mat-tooltip {
+  font-size: 12px;
+}
+
+.campana-notifiche {
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+
+.user-main-div {
+  position: absolute;
+  top: 70px;
+  /*max-height: 70%;*/
+  left: 30px;
+  right: 30px;
+  bottom: 25px;
+  height: calc(100% - 95px);
+}
+
+.pagina-corrente {
+  /*width: calc(100% - 240px);*/
+  /*margin-top: -20px;*/
+  float: left;
+  width: calc(100% - 230px);
+  /*margin-left: -40px;*/
+  height: 100% !important;
+  /*display: inline-block;*/
+}
+
+.azioni {
+  /*display: inline-block;*/
+  float: right;
+  /*margin-right: -40px;*/
+}
+
+.azione {
+  width: 200px;
+  /* height: max-content;*/
+  text-align: center;
+  background: rgba(0,160,199, 0.2);
+  color: cornsilk;
+  margin-bottom: 15px;
+  /*
+  margin-left: 15px;*/
+}
+
+.azione:hover {
+  background: rgba(0,160,199, 0.6) !important;
+  cursor: pointer;
+}
+
+.azione:active {
+  outline: none;
+  background: rgba(0,160,199, 1) !important;
+}
+
+.router-link-active {
+  outline: none;
+  background: rgba(0,160,199, 0.6) !important;
+}
+
+
+/* Style for the main card */
+.user-main-card {
+  background: rgba(0,160,199, 0.6);
+  height: 100%;
+  border-radius: 10px !important;
+  text-align:center;
+  padding-right: -15px;
+}
+
+.vertically-scrollable-content-white {
+  scrollbar-width: thin;
+  scrollbar-color: oldlace transparent;
+}
+
+.vertically-scrollable-content-blue {
+  scrollbar-width: thin;
+  scrollbar-color: #00A0C7 transparent;
+}
+
+
+/* Style for the main card header */
+.header {
+  margin: 0 30px 0 13px;
+  float: left;
+  position: relative;
+  min-width: 160px;
+}
+
+.titolo {
+  color: oldlace;
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+
+.linea-label{
+  color: oldlace;
+  font-size: large;
+}
+
+/* Style for linea selector */
+.linea-select {
+  max-width: 100px;
+  background: oldlace;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.linea-option {
+  font-size: 15px;
+}
+
+/*===== teoricamente questi non funzionano =====*/
+.linea-select.mat-select-value {
+  color: darkslategray !important;
+}
+mat-select.mat-select-value {
+  color: darkslategray !important;
+}
+mat-option .mat-selected {
+  color: darkslategray !important;
+}
+/*==============================================*/
+
+.mat-form-field-type-mat-select .mat-form-field-label, .mat-select-value {
+  color: darkslategray;
+}
+
+::ng-deep .mat-select-value{
+  color: white!important;
+}
+
+/* Style for date selector */
+.date-input {
+  width: 100px;
+  background-color: transparent;
+  color: oldlace;
+  font-size: medium;
+  border: none;
+}
+
+.date-input::placeholder {
+  color: oldlace;
+}
+
+.mat-datepicker-toggle {
+  color: oldlace;
+  vertical-align: 2px;
+}
+
+::ng-deep.mat-calendar-body-cell-content .mat-calendar-body-selected {
+  background-color: coral !important;
+  color: coral !important;
+}
+
+
+/* Style for text that tells what to do */
+.direttiva {
+  color: oldlace;
+  width: 150px;
+}
+
+.tooLateWarning {
+  color: #db5f32;
+  width: 150px;
+}
+
+
+/* Style for text to show when there's no corse to show */
+.no-corsa {
+  color: oldlace;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 55%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 300px;
+}
+
+.no-andata-ritorno {
+  color: oldlace;
+  width: 300px;
+  position: relative;
+  margin-top: 15%;
+  /*top: 50%;*/
+  /*left: 50%;
+  transform: translate(-50%, -50%);*/
+}
+
+.user-main-card-content {
+  max-height: 100%;
+  /*overflow-y: auto;*/
+  overflow-y: scroll;
+}
+
+/*.user-main-card-content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 10px !important;
+  background-color: transparent !important;
+  scrollbar-track-color: transparent !important;
+}
+
+.user-main-card-content::-webkit-scrollbar {
+  width: 12px !important;
+  background-color: transparent !important;
+}
+
+.user-main-card-content::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: oldlace;
+}*/
+
+/* Styles for tab labels */
+.mat-tab-label {
+  background-color: transparent;
+  color: oldlace;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Styles for the active tab label */
+.mat-tab-label.mat-tab-label-active {
+  background-color: oldlace;
+  color: darkslategray; /*e86f43*/
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  /*font-weight: 700;*/
+}
+
+.mat-ink-bar {
+  background-color: coral !important;
+  height: 5px !important;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  position: center !important;
+  margin-left: -0.5px;
+}
+
+/*per levare la righetta sottile fra le mat-tab-label e le card sotto*/
+mat-tab-header {
+  border-bottom-style: none !important;
+}
+
+
+
+/* Style for the card of each fermata */
+.card-fermata-title {
+  margin-top: -1px;
+  margin-bottom: 1px;
+}
+
+.luogo-item {
+  color: darkslategray;
+  font-weight: bold;
+  font-size: 19px; /*20px per attendance*/
+  margin-left: -20px;
+}
+
+.spacer-vertical {
+  display: inline-block;
+  margin: 5px 10px -10px 10px;
+  width: 2px;
+  position: absolute;
+}
+.mask {
+  overflow: hidden;
+  width: 2px;
+  height: 20px;
+}
+.mask:after {
+  content:'';
+  display:block;
+  margin-left: -2px;
+  width: 2px;
+  height: 100%;
+  border-radius: 12px / 125px;
+  box-shadow: 0 0 2.5px black;
+}
+
+.indirizzo {
+  color: gray;
+  font-weight: normal;
+  font-size: 13px;
+  margin-left: 21px;
+}
+
+.orario-item {
+  color: coral;
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: -20px;
+  /*margin-top: 14px;*/ /*in attendance non c'è*/
+}
+
+.clock {
+  font-size: 20px;
+  margin: 3px 0 0 2px;
+}
+
+.lista-persone-fermata {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  color: darkslategray;
+  margin-left: 36px; /*in attendance è 43px*/
+  font-size: small;
+}
+
+
+/*================ Dialogs =================*/
+
+.dialog .mat-dialog-container {
+  background: rgba(10, 175, 194, 1) !important; /*rgba(135, 219, 220, 0.9)*/
+  border-radius: 20px;
+  text-align: center !important;
+  color: oldlace;
+}
+
+.dialog-profilo {
+  text-align: center !important;
+  color: oldlace;
+}
+.dialog-profilo .mat-dialog-container {
+  background: rgba(10, 175, 194, 1) !important; /*rgba(135, 219, 220, 0.9)*/
+  border-radius: 10px
+}
+
+.dialog-user {
+  margin: 60px 30px 0 0 !important;
+}
+.dialog-user .mat-dialog-container {
+  background: oldlace !important; /*rgba(135, 219, 220, 0.9)*/
+  text-align: center !important;
+  color: darkslategray;
+  border-radius: 10px;
+}
+
+.dialog-cambio-password .mat-dialog-container {
+  background: rgba(0,160,199, 0.9) !important; /*rgba(135, 219, 220, 0.9)*/
+  border-radius: 10px;
+  text-align: center !important;
+  color: oldlace;
+}
+
+/*=======================================*/
+
+
+.fermata-select {
+  max-width: 250px;
+  background: oldlace;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.fermata-option {
+  font-size: 15px;
+}
+
+.fermata-select.mat-select-value {
+  color: darkslategray !important;
+}
+
+
+
+/*.mat-input-invalid::placeholder {
+  color: deeppink !important;
+}
+
+mat-form-field.ng-dirty.ng-invalid .mat-form-field-underline {
+  background-color: oldlace !important;
+}
+
+.mat-input-invalid .mat-input-ripple {
+  background-color: hotpink !important;
+}*/
+
+.mat-form-field-label,
+.mat-form-field-required-marker,
+.mat-error,
+.mat-hint {
+  color: oldlace !important;
+}
+
+.mat-form-field-ripple,
+.mat-form-field-underline {
+  background-color: oldlace !important;
+}
+
+
+
+/* =========== Bottoni ============ */
+
+.btn {
+  min-height: 35px; /*height: 35px;*/
+  width: fit-content; /*width: 80px;*/
+  background-color: coral;
+  /*border: none;*/
+  border-radius: 12px !important;
+  /*box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.6);*/
+  opacity: 1;
+  /*text-align: center;*/
+  font-size: 15px;
+  /*font-weight: 500;*/
+  color: cornsilk;
+  margin: 0 0 4px 4px;
+
+  /*box-sizing: border-box;*/
+  /*position: relative;*/
+  /*-webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: 0;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+  min-width: 64px;
+  line-height: 36px;
+  padding: 0 16px;
+  overflow: visible;
+  transform: translate3d(0,0,0);
+  transition: background .4s cubic-bezier(.25,.8,.25,1),box-shadow 280ms cubic-bezier(.4,0,.2,1);*/
+}
+.btn:hover {
+  background-color: #db5f32;
+  color: rgb(245, 238, 213);
+  /*border-color: #db5f32; !*#e86f43*!
+  color: cornsilk;*/
+}
+.btn:focus {
+  background-color: coral !important;
+  color: cornsilk !important;
+}
+.btn:disabled, btn[disabled] {
+  background-color: coral !important;
+  color: cornsilk !important;
+  cursor: not-allowed !important;
+}
+/*.btn:not([class*="mat-elevation-z"]) {
+  box-shadow: 0 3px 1px -2px
+  rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0
+  rgba(0,0,0,.12);
+}*/
+
+.icon-btn {
+  color: oldlace;
+  font-size: 17px;
+  cursor: pointer;
+  /*background-color: hotpink;*/
+  text-align: center;
+  vertical-align: sub !important;
+  margin-right: 3px;
+  /*background-color: transparent;
+  border: none;
+  padding: 2px;*/
+}
+
+.annulla {
+  background: rgba(253, 245, 230, 0.3);
+  border: none;
+  margin-left: 6px;
+  color: cornsilk;
+  box-shadow: none !important;
+}
+.annulla:hover {
+  background: rgba(253, 245, 230, 0.5);
+}
+.annulla:focus {
+  background: rgba(253, 245, 230, 0.3) !important;
+  color: cornsilk !important;
+}
+/*.annulla {
+  background-color: transparent;
+  border-style: none;
+  margin-left: 6px;
+  color: coral;
+  font-weight: bold;
+}*/
+
+.blue-btn {
+  min-height: 35px; /*height: 35px;*/
+  background-color: #00A0C7;
+  border-color: #00A0C7;
+  border-radius: 12px !important;
+  font-size: 15px;
+  color: cornsilk;
+  opacity: 1;
+  width: fit-content; /*width: 80px;*/
+  text-align: center;
+}
+.blue-btn:hover {
+  background-color: #0083a3;
+  /*border-color: #0083a3;*/ /*#e86f43*/
+  color: rgb(245, 238, 213);
+}
+.blue-btn:focus {
+  background-color: #00A0C7 !important;
+  color: cornsilk !important;
+}
+.blue-btn:disabled, blue-btn[disabled] {
+  background-color: #00A0C7 !important;
+  color: cornsilk !important;
+}
+
+/* ======================================= */
+
+
+.example-full-width {
+  width: 400px;
+  color: oldlace;
+}

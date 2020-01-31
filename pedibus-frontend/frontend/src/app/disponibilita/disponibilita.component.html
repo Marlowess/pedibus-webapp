@@ -1,0 +1,172 @@
+<!--<div style="max-height: 70%;">-->
+<mat-card class="user-main-card">
+
+  <div class="header">
+    <mat-card-title>
+      <h2 class="titolo" style="margin-bottom: 0">Disponibilità</h2>
+      <mat-card-subtitle>
+        <h4 *ngIf="flagRawData" style="color: oldlace; margin-bottom: 20px;">
+          dal {{dataInizio | date: 'dd/MM/yyyy'}}
+          <br>al {{dataFine | date: 'dd/MM/yyyy'}}
+        </h4>
+        <div style="margin-left: -8px; margin-bottom: 5px">
+          <mat-datepicker-toggle matSuffix [for]="dpDisponibilita"></mat-datepicker-toggle>
+          <input [min]="minDate" [max]="maxDate" [matDatepicker]="dpDisponibilita"
+            placeholder="{{date | date: 'dd/MM/yyyy'}}" class="date-input" disabled
+            (dateChange)="onDateSelect('change', $event)">
+          <!--matInput tolto perché sfasava l'altezza dell'input e il colore-->
+          <mat-datepicker #dpDisponibilita touchUi disabled="false" [startAt]="startDate"></mat-datepicker>
+        </div>
+
+        <div *ngIf="showSalva" style="margin-top: -4px;">
+          <button mat-raised-button class="btn" (click)="updateDisponibilita()">
+            Salva
+          </button>
+        </div>
+      </mat-card-subtitle>
+    </mat-card-title>
+  </div>
+
+  <mat-card-content class="user-main-card-content vertically-scrollable-content-white">
+    <div *ngIf="noCorse; else corse">
+      <h3 class="no-corsa">
+        Nessuna corsa dal {{date | date: 'dd/MM/yyyy'}} nei 7 giorni successivi
+      </h3>
+    </div>
+
+    <ng-template #corse>
+      <div *ngIf="noCorse == false" fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch">
+        <mat-card *ngFor="let disponibilita of listaDisponibilita; let i = index;"
+                  [ngClass]="isPastDay(disponibilita.getDate())? 'card-inactive' : 'card-active'"
+                  [matTooltipDisabled]="!isPastDay(disponibilita.getDate())"
+                  matTooltip="Disponibilità non più modificabili">
+          <mat-card-header style="margin-left: 8px">
+            <!--<div mat-card-avatar>
+              <mat-icon>departure_board</mat-icon>
+            </div>-->
+            <mat-card-title class="date">{{ showDate(i) | date: 'EEEE, d MMMM y'}}</mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="andata">
+              <span fxLayout="row" fxLayoutGap="8px">
+                <mat-checkbox [hidden]="disponibilita.getIdTurnoAndata() != null" #andata
+                              [disabled]="isPastDay(disponibilita.getDate())"
+                              [checked]="disponibilita.existsAndata()"
+                              (change)="checkChanged(disponibilita.getDate(), 0)"
+                              [matTooltipDisabled]="isPastDay(disponibilita.getDate())"
+                              matTooltip="{{andata.checked ? 'Rimuovi disponibilità' : 'Aggiungi disponibilità'}}">
+                  <h4>Andata</h4>
+                </mat-checkbox>
+              </span>
+
+              <div *ngIf="disponibilita.getIdTurnoAndata() !== null">
+                <h4>Andata</h4>
+                <!--&& !(isPastDay(disponibilita.getDate()) && !disponibilita.disponibilitaAndata.confermata)-->
+                <div [class]="isConfermatoOrRifiutato(i, 0)">
+                  <mat-label> <!--matTooltip="{{disponibilita.disponibilitaAndata.confermata
+                                          ? 'Turno confermato' : 'Turno non confermato'}}"-->
+                    <span>
+                      <mat-icon *ngIf="disponibilita.disponibilitaAndata.confermata" class="turno-icon"
+                                matTooltip="Turno confermato">check_box</mat-icon>
+                      <mat-icon *ngIf="!disponibilita.disponibilitaAndata.confermata" class="turno-icon"
+                                matTooltip="Turno non confermato">check_box_outline_blank</mat-icon>
+                      Turno assegnato ({{disponibilita.getLineaAndata()}})
+                    </span>
+                    <!--[ngStyle]="{'font-weight': disponibilita.getConfermataAndata() ? 'bold' : 'normal'}"-->
+                    <br>
+                    <span class="important-disp">{{disponibilita.getOraSalitaAndata()}}</span> -
+                    Partenza da <span class="important-disp" matTooltip="{{disponibilita.getSalitaDescrizioneAndata()}}">
+                    {{disponibilita.getSalitaIndirizzoAndata()}}</span>
+                    <br>
+                    <span class="important-disp">{{disponibilita.getOraDiscesaAndata()}}</span> -
+                    Arrivo in <span class="important-disp" matTooltip="{{disponibilita.getDiscesaDescrizioneAndata()}}">
+                    {{disponibilita.getDiscesaIndirizzoAndata()}}</span>
+                  </mat-label>
+                </div>
+
+                <div *ngIf="!disponibilita.disponibilitaAndata.confermata && !isPastDay(disponibilita.getDate())">
+                  <button mat-raised-button class="btn btn-piccolo btn-conferma"
+                          (click)="confermaRifiutaTurno(i, 0, true)">
+                    Conferma
+                  </button>
+                  <button mat-raised-button class="btn btn-piccolo"
+                          (click)="confermaRifiutaTurno(i, 0, false)">
+                    Rifiuta
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="ritorno">
+              <div style="margin-left: 25px">
+                <span fxLayout="row" fxLayoutGap="8px">
+                  <mat-checkbox [hidden]="disponibilita.getIdTurnoRitorno() != null" #ritorno
+                                [disabled]="isPastDay(disponibilita.getDate())"
+                                [checked]="disponibilita.existsRitorno()"
+                                (change)="checkChanged(disponibilita.getDate(), 1)"
+                                [matTooltipDisabled]="isPastDay(disponibilita.getDate())"
+                                matTooltip="{{ritorno.checked ? 'Rimuovi disponibilità' : 'Aggiungi disponibilità'}}">
+                    <h4>Ritorno</h4>
+                  </mat-checkbox>
+                </span>
+
+                <div *ngIf="disponibilita.getIdTurnoRitorno() !== null">
+                  <h4>Ritorno</h4>
+                  <div [class]="isConfermatoOrRifiutato(i, 1)">
+                    <mat-label>
+                      <span>
+                        <mat-icon *ngIf="disponibilita.disponibilitaRitorno.confermata" class="turno-icon"
+                                  matTooltip="Turno confermato">check_box</mat-icon>
+                        <mat-icon *ngIf="!disponibilita.disponibilitaRitorno.confermata" class="turno-icon"
+                                  matTooltip="Turno non confermato">check_box_outline_blank</mat-icon>
+                        Turno assegnato ({{disponibilita.getLineaRitorno()}})
+                      </span>
+
+                      <!--[ngStyle]="{'font-weight': disponibilita.getConfermataAndata() ? 'bold' : 'normal'}"-->
+                      <br>
+                      <span class="important-disp">{{disponibilita.getOraSalitaRitorno()}}</span> -
+                      Partenza da
+                      <span class="important-disp" matTooltip="{{disponibilita.getSalitaDescrizioneRitorno()}}">
+                        {{disponibilita.getSalitaIndirizzoRitorno()}}
+                      </span>
+                      <br>
+                      <span class="important-disp">{{disponibilita.getOraDiscesaRitorno()}}</span> -
+                      Arrivo in
+                      <span class="important-disp" matTooltip="{{disponibilita.getDiscesaDescrizioneRitorno()}}">
+                        {{disponibilita.getDiscesaIndirizzoRitorno()}}
+                      </span>
+                    </mat-label>
+
+                    <!--{{ messaggeTurnoAssegnato(i, 1) }}-->
+                  </div>
+                  <div *ngIf="!disponibilita.disponibilitaRitorno.confermata && !isPastDay(disponibilita.getDate())">
+                    <button mat-raised-button class="btn btn-piccolo btn-conferma"
+                            (click)="confermaRifiutaTurno(i, 1, true)" *ngIf="!disponibilita.getConfermataRitorno()">
+                      Conferma
+                    </button>
+                    <button mat-raised-button class="btn btn-piccolo"
+                            (click)="confermaRifiutaTurno(i, 1, false)" *ngIf="!disponibilita.getConfermataRitorno()">
+                      Rifiuta
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </ng-template>
+
+  </mat-card-content>
+</mat-card>
+<!--</div>-->
+
+<!--<div *ngIf="FLAG_DEBUG_MODE_ACCOMPAGNATORE">
+  * Nocorse: {{ noCorse }} <br>
+  * numCorse: {{ numCorse }} <br>
+  * FLAG_DEBUG_MODE_ACCOMPAGNATORE: {{ FLAG_DEBUG_MODE_ACCOMPAGNATORE }} <br>
+  * debugNotificationMessage: <br>
+  {{ debugNotificationMessage | json }} <br>
+</div>-->

@@ -1,0 +1,89 @@
+<div [ngClass]="(isAccompagnatore() || isAmministratoreMaster()) ? 'main-div tre-bottoni'
+                : (isGenitore() ? 'main-div quattro-bottoni' :
+                  (isAmministratore() ? 'main-div due-bottoni' : 'main-div un-bottone'))">
+  <h1>Bentornato!</h1>
+  <!-- <h1 *ngIf="userEmail">Bentornato {{userEmail}}!</h1> -->
+
+  <hr class="hr-light">
+
+  <div class="azioni-home" fxLayout="row">
+
+    <!-- bottoni per l'utente genitore -->
+    <mat-card *ngIf="isGenitore()"
+              class="azione" (click)="RedirectProfilo()">
+      <mat-card-title>Profilo</mat-card-title>
+      <mat-card-content class="azione-content">
+        <p>Modifica la lista dei bambini e le prenotazioni predefinite</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="isGenitore()"
+              class="azione" (click)="RedirectPrenotazioni()">
+      <mat-card-title>Prenotazioni</mat-card-title>
+      <mat-card-content class="azione-content">
+        <p>Aggiungi o elimina una prenotazione</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="isGenitore()"
+              class="azione" (click)="RedirectMappa()">
+      <mat-card-title>Mappa</mat-card-title>
+      <mat-card-content class="azione-content">
+        <p>Visualizza le fermate delle linee sulla mappa</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- bottoni per l'utente accompagnatore -->
+    <mat-card *ngIf="isAccompagnatore()"
+              class="azione" (click)="RedirectDisponibilita()">
+      <mat-card-title>Disponibilità</mat-card-title>
+      <mat-card-content>
+        <p>Segnala o elimina la tua disponibilità per una corsa</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="isAccompagnatore()"
+              class="azione" (click)="RedirectPresenze()">
+      <mat-card-title>Presenze</mat-card-title>
+      <mat-card-content>
+        <p>Guarda i bambini presenti alle corse a te assegnate</p>
+      </mat-card-content>
+    </mat-card>
+
+
+    <!-- bottoni per l'utente amministratore -->
+    <mat-card *ngIf="isAmministratore() || isAmministratoreMaster()"
+              class="azione" (click)="RedirectTurni()">
+      <mat-card-title>Turni</mat-card-title>
+      <mat-card-content>
+        <p>Assegna i turni per le diverse corse</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="isAmministratoreMaster()"
+              class="azione" (click)="RedirectPromuoviDeclassa()">
+      <mat-card-title>Gestione Ruoli</mat-card-title>
+      <mat-card-content>
+        <p>Modifica il ruolo di altri utenti</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="isSegreteria()"
+              class="azione" (click)="RedirectRegistraUtente()">
+      <mat-card-title>Aggiunta Utenti</mat-card-title>
+      <mat-card-content>
+        <p>Aggiungi un nuovo utente al sistema</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- bottone comune a tutti (tranne la segreteria) -->
+    <mat-card *ngIf="!isSegreteria()" class="azione" (click)="RedirectComunicazioni()">
+      <mat-card-title>Comunicazioni</mat-card-title>
+      <mat-card-content>
+        <p>Leggi le comunicazioni che hai ricevuto</p>
+      </mat-card-content>
+    </mat-card>
+
+
+  </div>
+</div>

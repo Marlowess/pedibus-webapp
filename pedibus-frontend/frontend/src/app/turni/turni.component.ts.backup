@@ -1,0 +1,981 @@
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {DateAdapter, MatDialog, MatPaginator, PageEvent} from '@angular/material';
+import {FermataConAccompagnatori} from '../domain/fermata-con-accompagnatori';
+import {configDatePicker} from '../config';
+import {Turno} from '../domain/turno';
+import {CorsaConTurni} from '../domain/corsa-con-turni';
+import {Observable, Subscription} from 'rxjs';
+import {AmministratoreService} from '../services/amministratore-service/amministratore.service';
+import {Accompagnatore} from '../domain/accompagnatore';
+// import {forEach} from '@angular/router/src/utils/collection';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {DialogTurnoComponent} from '../dialog-turno/dialog-turno.component';
+// import {FermateTurnoVecchie} from '../domain/fermateTurnoVecchie';
+
+@Component({
+  selector: 'app-turni',
+  templateUrl: './turni.component.html',
+  styleUrls: ['./turni.component.css'],
+  encapsulation: ViewEncapsulation.None
+})
+export class TurniComponent implements OnInit, OnDestroy {
+
+  date: Date;
+  linee: string[];
+  selectedLinea: string;
+  minDate: Date = configDatePicker.minDate;
+  maxDate: Date = configDatePicker.maxDate;
+  startDate: Date = new Date();
+  noCorse = false;
+  showConsolidaTurno = false;
+
+  corsa: CorsaConTurni = new CorsaConTurni(
+    null, null, new Array<FermataConAccompagnatori>(), new Array<FermataConAccompagnatori>());
+  // listaTurniAdd: Array<Turno> = [];
+  listaTurniAddAndata: Map<string, Turno> = new Map<string, Turno>(); // idAccomp, turno
+  listaTurniAddRitorno: Map<string, Turno> = new Map<string, Turno>(); // idAccomp, turno
+  listaTurniModify: Map<string, Turno> = new Map<string, Turno>(); // idTurno, turno
+  listaTurniDelete: Map<string, Turno> = new Map<string, Turno>(); // idTurno, turno
+  turnoAddSubA: Subscription = null;
+  turnoAddSubR: Subscription = null;
+  turnoModifySub: Subscription = null;
+  turnoDeleteSub: Subscription = null;
+
+  /*fermataPartenzaIdVecchia = '';
+  fermataArrivoIdVecchia = '';*/
+
+  lineeObs: Observable<any>;
+  lineeSub: Subscription = null;
+  corsaTurniObs: Observable<any>;
+  corsaTurniSub: Subscription = null;
+
+  /* accompagnatori a cui avevo già assegnato un turno (consolidato) */
+  accompAndata: Array<Accompagnatore> = [];
+  accompRitorno: Array<Accompagnatore> = [];
+
+  /* accompagnatori a cui sto assegnando un turno ora (non ancora consolidato) */
+  tempAccompAndata: Array<Accompagnatore> = [];
+  tempAccompRitorno: Array<Accompagnatore> = [];
+
+  constructor(
+    private amministratoreService: AmministratoreService,
+    // private cdr: ChangeDetectorRef
+    public dialog: MatDialog,
+    // private dateAdapter: DateAdapter<any>
+  ) { }
+
+  ngOnInit() {
+    this.date = new Date();
+    // this.dateAdapter.setLocale('it');
+    this.lineeObs = this.amministratoreService.getLineeAdmin();
+    this.lineeSub = this.lineeObs.subscribe({
+      next: linee => {
+        this.linee = linee;
+        // console.log('*************', this.linee, '***************');
+        this.selectedLinea = this.linee[0];
+        // console.log('*************', this.selectedLinea, '***************');
+        // 1560384000000
+        // this.corsaTurniObs = this.amministratoreService.getTurniCorsa(this.selectedLinea, Number(this.date));
+        // this.viewCorsaConTurni(this.selectedLinea, Number(this.date));
+        this.viewCorsaConTurni(this.selectedLinea, this.date);
+      },
+      error: err => console.log(err),
+      complete: () => console.log('lineeObs completato')
+    });
+    // this.cdr.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    if (this.corsaTurniSub != null) {
+      this.corsaTurniSub.unsubscribe();
+      if (this.lineeSub != null) {
+        this.lineeSub.unsubscribe();
+      }
+    }
+    if (this.turnoAddSubA != null) {
+      this.turnoAddSubA.unsubscribe();
+    }
+    if (this.turnoAddSubR != null) {
+      this.turnoAddSubR.unsubscribe();
+    }
+    if (this.turnoModifySub != null) {
+      this.turnoModifySub.unsubscribe();
+    }
+    if (this.turnoDeleteSub != null) {
+      this.turnoDeleteSub.unsubscribe();
+    }
+  }
+
+  viewCorsaConTurni(linea: string, date: Date) { //  dateMillisec: number
+    this.corsa = new CorsaConTurni(
+      null, null, new Array<FermataConAccompagnatori>(), new Array<FermataConAccompagnatori>());
+    this.accompAndata = []; this.accompRitorno = []; this.tempAccompAndata = []; this.tempAccompRitorno = [];
+    this.showConsolidaTurno = false;
+    this.corsaTurniObs = this.amministratoreService.getTurniCorsa(linea, date);
+    this.corsaTurniSub = this.corsaTurniObs.subscribe({
+      next: (value) => {
+        this.noCorse = false;
+        const corsa: any = value;
+        this.corsa.nomeLinea = corsa.nome_linea;
+        const fields = corsa.data.split('-');
+        const day = fields[0]; const month = fields[1]; const year = fields[2];
+        this.corsa.data = new Date(Number(year), Number(month) - 1, Number(day));
+        // tslint:disable-next-line:forin
+        for (const key in corsa.andata) {
+          /* ogni corsa.andata[key] è un oggetto composto da
+             un oggetto fermata e un array di accompagnatori */
+          const fermataAccompagnatori = corsa.andata[key];
+          // this.updateCorsaInfos(corsa.andata[key], this.accompAndata, this.corsa.fermateConAccAndata);
+
+          /*// prendo le informazioni della fermata
+          const fermata = fermataAccompagnatori.fermata;
+
+          // prendo la lista degli accompagnatori per la fermata
+          const acc: Array<any> = fermataAccompagnatori.userInfos;
+          const accompagnatori: Array<Accompagnatore> = [];
+          // tslint:disable-next-line:forin
+          for (const user in acc) {
+            const a = new Accompagnatore(
+              acc[user].user.id,  acc[user].user.nome, acc[user].user.cognome, acc[user].user.email,
+              acc[user].turnoId, acc[user].assegnato, acc[user].confermato, null, null);
+            accompagnatori.push(a);
+            if (a.assegnato || a.confermato) {
+              if (this.accompAndata.find(accomp => accomp.id === a.id) === undefined) {
+                // è la prima fermata a cui risulta assegnato
+                a.fermataPartenzaId = fermata.id;
+                a.fermataArrivoId = fermata.id;
+                this.accompAndata.push(a);
+              } else {
+                this.accompAndata.forEach(accomp => {
+                  if (accomp.id === a.id) {
+                    accomp.fermataArrivoId = fermata.id;
+                  }
+                });
+              }
+            }
+          }
+          // aggiungo alle informazioni della fermata l'array di accompagnatori appena creato
+          this.corsa.fermateConAccAndata.push(new FermataConAccompagnatori(
+            fermata.id, fermata.descrizione, fermata.orario, accompagnatori)
+          );*/
+          this.setInfoCorsa(fermataAccompagnatori, this.accompAndata, this.corsa.fermateConAccAndata);
+        }
+        // console.log('Accompagnatori con un turno (andata): ');
+        this.accompAndata.forEach(a => console.log(a.nome));
+        // tslint:disable-next-line:forin
+        for (const key in corsa.ritorno) {
+          /* ogni corsa.andata[key] è un oggetto composto da
+             un oggetto fermata e un array di accompagnatori */
+          const fermataAccompagnatori = corsa.ritorno[key];
+          // this.updateCorsaInfos(corsa.ritorno[key], this.accompRitorno, this.corsa.fermateConAccRitorno);
+
+          /*// prendo le informazioni della fermata e ci aggiungo l'array di accompagnatori appena creato
+          const fermata = fermataAccompagnatori.fermata;
+
+          // prendo la lista di accompagnatori per la fermata
+          const acc: Array<any> = fermataAccompagnatori.userInfos;
+          const accompagnatori: Array<Accompagnatore> = [];
+          // tslint:disable-next-line:forin
+          for (const user in acc) {
+            const a = new Accompagnatore(
+              acc[user].user.id,  acc[user].user.nome, acc[user].user.cognome, acc[user].user.email,
+              acc[user].turnoId, acc[user].assegnato, acc[user].confermato, null, null);
+            accompagnatori.push(a);
+            if (a.assegnato || a.confermato) {
+              if (this.accompRitorno.find(accomp => accomp.id === a.id) === undefined) {
+                // è la prima fermata a cui risulta assegnato
+                a.fermataPartenzaId = fermata.id;
+                a.fermataArrivoId = fermata.id;
+                this.accompRitorno.push(a);
+              } else {
+                this.accompRitorno.forEach(accomp => {
+                  if (accomp.id === a.id) {
+                    accomp.fermataArrivoId = fermata.id;
+                  }
+                });
+              }
+            }
+          }
+          // aggiungo alle informazioni della fermata l'array di accompagnatori appena creato
+          this.corsa.fermateConAccRitorno.push(new FermataConAccompagnatori(
+            fermata.id, fermata.descrizione, fermata.orario, accompagnatori)
+          );*/
+          this.setInfoCorsa(fermataAccompagnatori, this.accompRitorno, this.corsa.fermateConAccRitorno);
+        }
+        // console.log('Accompagnatori con un turno (ritorno): ');
+        this.accompRitorno.forEach(a => console.log(a.nome));
+
+        this.tempAccompAndata = this.accompAndata; this.tempAccompRitorno = this.accompRitorno;
+      },
+      error: err => {
+        // console.log(err);
+        if (err.error.errore === 'Corsa non esistente') {
+          this.noCorse = true;
+        }
+      },
+      complete: () => {
+        // console.log('corsaTurniObs completato');
+      }
+    });
+  }
+
+  /* Evento associato al click sul nome di un accompagnatore */
+  onClick(i: number, j: number, direzione: number) {
+    /* TODO: posso anche fare click su uno che mi ha confermato il turno: torna nero sottile */
+    /* TODO: clicca e lo prende come fermata di salita sempre: aggiustare sta cosa */
+    let accompagnatore: Accompagnatore;
+    switch (direzione) {
+      case 0:
+        accompagnatore = this.corsa.fermateConAccAndata[i].accompagnatori[j];
+        /*if (this.accompAndata.find(a => a.id === accompagnatore.id) === undefined
+            && this.accompRitorno.find(a => a.id === accompagnatore.id) === undefined) {*/
+        /*if (this.tempAccompAndata.find(a => a.id === accompagnatore.id) === undefined
+          && this.tempAccompRitorno.find(a => a.id === accompagnatore.id) === undefined) {*/
+        if (this.tempAccompAndata.find(a => a.id === accompagnatore.id) === undefined) {
+          accompagnatore.fermataPartenzaId = this.corsa.fermateConAccAndata[i].id;
+          // console.log('Aggiungi turno');
+          this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccAndata, accompagnatore,
+            0, true, null, null, null,
+            false);
+        } else {
+          // console.log('Modifica o elimina turno');
+          const accomp = this.tempAccompAndata.find(a => a.id === accompagnatore.id);
+          // this.fermataPartenzaIdVecchia = accomp.fermataPartenzaId;
+          // this.fermataArrivoIdVecchia = accomp.fermataArrivoId;
+          // console.log(this.fermataPartenzaIdVecchia, this.fermataArrivoIdVecchia);
+          // console.log(accomp.fermataPartenzaId, accomp.fermataArrivoId);
+          // const wasConfirmed = accomp.confermato;
+          /*this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccAndata, accomp, 0,
+                          false, accomp.idTurno, this.fermataPartenzaIdVecchia, this.fermataArrivoIdVecchia,
+                          wasConfirmed);*/
+          this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccAndata, accomp, 0,
+            false, accomp.idTurno, accomp.fermataPartenzaId, accomp.fermataArrivoId, accomp.confermato);
+        }
+        break;
+      case 1:
+        accompagnatore = this.corsa.fermateConAccRitorno[i].accompagnatori[j];
+        /*if (this.tempAccompAndata.find(a => a.id === accompagnatore.id) === undefined
+            || this.tempAccompRitorno.find(a => a.id === accompagnatore.id) === undefined) {*/
+        if (this.tempAccompRitorno.find(a => a.id === accompagnatore.id) === undefined) {
+          // !this.accompRitorno.includes(accompagnatore)
+          // lo aggiungo, non ha ancora un turno assegnato
+          accompagnatore.fermataPartenzaId = this.corsa.fermateConAccRitorno[i].id;
+          // console.log('Aggiungi turno');
+          this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccRitorno, accompagnatore,
+            1, true, null, null, null,
+            false);
+        } else {
+          // lo elimino o lo modifico
+          const accomp = this.tempAccompRitorno.find(a => a.id === accompagnatore.id);
+          // this.fermataPartenzaIdVecchia = accomp.fermataPartenzaId;
+          // this.fermataArrivoIdVecchia = accomp.fermataArrivoId;
+          // const wasConfirmed = accomp.confermato;
+          /*this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccRitorno, accomp, 1,
+                          false, accomp.idTurno, this.fermataPartenzaIdVecchia, this.fermataArrivoIdVecchia,
+                          wasConfirmed);*/
+          // console.log('Modifica o elimina turno');
+          this.openDialog(this.corsa.nomeLinea, this.corsa.data, this.corsa.fermateConAccRitorno, accomp, 1,
+            false, accomp.idTurno, accomp.fermataPartenzaId, accomp.fermataArrivoId, accomp.confermato);
+        }
+        break;
+    }
+  }
+
+  openDialog(nomeLinea, data, fermate: FermataConAccompagnatori[], accompagnatore: Accompagnatore, direzione,
+             isNew: boolean, idTurno: string, idPartenzaVecchia: string, idArrivoVecchia: string,
+             wasConfirmed: boolean): void {
+
+    const dialogRef = this.dialog.open(DialogTurnoComponent, {
+      width: '300px',
+      data: {ferm: fermate, is_new: isNew, accomp: accompagnatore}
+    });
+
+    let fermataSalitaID: string;
+    let fermataDiscesaID: string;
+
+    dialogRef.afterClosed().subscribe(result => {
+      // console.log('The dialog was closed');
+      // nel caso in cui si sia cliccata la X o il bottone 'annulla'
+      if (result === undefined) { return; } // result.pick
+
+      this.showConsolidaTurno = true; /*TODO: rimetterlo a false quando c'è il popup*/
+      fermataSalitaID = result.fermataSalitaID;
+      fermataDiscesaID = result.fermataDiscesaID;
+
+      let turno;
+      if (isNew) { // add new turno
+        turno = new Turno(nomeLinea, data, direzione, accompagnatore.id, fermataSalitaID, fermataDiscesaID,
+          null, null, wasConfirmed);
+      } else { // delete or modify turno
+        turno = new Turno(nomeLinea, data, direzione, accompagnatore.id, fermataSalitaID, fermataDiscesaID,
+          idPartenzaVecchia, idArrivoVecchia, wasConfirmed);
+      }
+      // console.log('data del turno: ' + data);
+      // console.log('fermata salita: ' + fermataSalitaID);
+      // console.log('fermata discesa: ' + fermataDiscesaID);
+
+      // se ho aggiunto un nuovo turno
+      if (isNew && fermataSalitaID !== null && fermataDiscesaID !== null) {
+
+        accompagnatore.fermataPartenzaId = fermataSalitaID;
+        accompagnatore.fermataArrivoId = fermataDiscesaID;
+        accompagnatore.assegnato = true;
+        accompagnatore.confermato = false;
+
+        if (direzione === 0) {
+          /*this.listaTurniAddAndata.set(accompagnatore.id, turno); // this.listaTurniAdd.push(turno);
+          // console.log('listaTurniAddAndata: ', this.listaTurniAddAndata);*/
+          this.updateView2(this.corsa.fermateConAccAndata, 'add', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          this.tempAccompAndata.push(accompagnatore);
+        } else {
+          this.listaTurniAddRitorno.set(accompagnatore.id, turno); // this.listaTurniAdd.push(turno);
+          // console.log('listaTurniAddRitorno: ', this.listaTurniAddRitorno);
+          this.updateView2(this.corsa.fermateConAccRitorno, 'add', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          this.tempAccompRitorno.push(accompagnatore);
+        }
+        // this.updateView(accompagnatore, turno, idTurno, false);
+
+        // se ho modificato un turno già esistente
+      } else if (!isNew && fermataSalitaID !== null && fermataDiscesaID !== null) {
+        /*accompagnatore.assegnato = true;
+        accompagnatore.confermato = false;*/
+        this.listaTurniModify.set(idTurno, turno);
+        // console.log('listaTurniModify: ', this.listaTurniModify);
+        // this.updateView(accompagnatore, turno, idTurno, false);
+        if (direzione === 0) {
+          this.updateView2(this.corsa.fermateConAccAndata, 'modify', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          this.tempAccompAndata.forEach(a => {
+            if (a.id === accompagnatore.id) {
+              a.fermataPartenzaId = fermataSalitaID;
+              a.fermataArrivoId = fermataDiscesaID;
+              a.assegnato = true; a.confermato = false;
+            }
+          });
+        } else {
+          this.updateView2(this.corsa.fermateConAccRitorno, 'modify', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          this.tempAccompRitorno.forEach(a => {
+            if (a.id === accompagnatore.id) {
+              a.fermataPartenzaId = fermataSalitaID;
+              a.fermataArrivoId = fermataDiscesaID;
+              a.assegnato = true; a.confermato = false;
+            }
+          });
+        }
+        // se ho eliminato un turno esistente
+      } else {
+        this.listaTurniDelete.set(idTurno, turno);
+        // console.log('listaTurniDelete: ', this.listaTurniDelete.keys());
+        // this.updateView(accompagnatore, turno, idTurno, true);
+        /* non lo levo ancora dalla lista di accompagnatori con turno, perché se subito dopo,
+        * prima di consolidare il turno, gli rimetto un turno, me lo metterebbe nella lista
+        * delle richieste di aggiunta di un turno, anche se il turno ce l'ha già. Creo una
+        * lista temporanea e agisco su quella
+        * */
+        if (direzione === 0) {
+          this.updateView2(this.corsa.fermateConAccAndata, 'delete', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          this.tempAccompAndata.forEach(a => {
+            if (a.id === accompagnatore.id) {
+              this.tempAccompAndata.splice(this.tempAccompAndata.indexOf(a), 1);
+            }
+          });
+        } else {
+          this.updateView2(this.corsa.fermateConAccRitorno, 'delete', false,
+            fermataSalitaID, fermataDiscesaID, false);
+          /*this.tempAccompRitorno.forEach(a => {
+            if (a.id === accompagnatore.id) {
+              this.tempAccompRitorno.splice(this.tempAccompRitorno.indexOf(a), 1);
+            }
+          });*/
+          this.tempAccompRitorno.splice(
+            this.tempAccompRitorno.findIndex(a => a.id === accompagnatore.id), 1
+          );
+        }
+      }
+    });
+  }
+
+  /*updateView(accompagnatore: Accompagnatore, turno: Turno, idTurno: string, elimina: boolean) {
+    let salita = false; let discesa = false;
+    if (turno.direzione === 0) {
+      if (elimina === false) { // aggiungi o modifica turno
+        this.corsa.fermateConAccAndata.forEach(fermata => {
+          fermata.accompagnatori.forEach(accomp => {
+            if (accomp.id === turno.userId) {
+              if (fermata.id === turno.fermataPartenzaId) {
+                salita = true;
+              }
+              if (salita && !discesa) {
+                accomp.assegnato = accompagnatore.assegnato;
+                accomp.confermato = accompagnatore.confermato;
+              } else {
+                accomp.assegnato = false;
+                accomp.confermato = false;
+              }
+              if (fermata.id === turno.fermataArrivoId) {
+                discesa = true;
+              }
+            }
+          });
+        /!*if (fermata.id === turno.fermataPartenzaId) {
+            salita = true;
+          }
+          if (salita && !discesa) {
+            fermata.accompagnatori.forEach(accomp => {
+              if (accomp.id === turno.userId) {
+                accomp.assegnato = accompagnatore.assegnato;
+                accomp.confermato = accompagnatore.confermato;
+              }
+            });
+            if (fermata.id === turno.fermataArrivoId) {
+              discesa = true;
+            }
+          }*!/
+        });
+      } else { // elimina il turno
+        this.corsa.fermateConAccAndata.forEach(fermata => {
+          fermata.accompagnatori.forEach(accomp => {
+            if (accomp.id === accompagnatore.id) {
+              accomp.assegnato = false;
+              accomp.confermato = false;
+            }
+          });
+        });
+      }
+    } else {
+      if (elimina === false) { // aggiungi o modifica turno
+        this.corsa.fermateConAccRitorno.forEach(fermata => {
+          fermata.accompagnatori.forEach(accomp => {
+            if (accomp.id === turno.userId) {
+              if (fermata.id === turno.fermataPartenzaId) {
+                salita = true;
+              }
+              if (salita && !discesa) {
+                accomp.assegnato = accompagnatore.assegnato;
+                accomp.confermato = accompagnatore.confermato;
+              } else {
+                accomp.assegnato = false;
+                accomp.confermato = false;
+              }
+              if (fermata.id === turno.fermataArrivoId) {
+                discesa = true;
+              }
+            }
+          });
+        });
+      } else {
+        this.corsa.fermateConAccRitorno.forEach(fermata => {
+          fermata.accompagnatori.forEach(accomp => {
+            if (accomp.id === accompagnatore.id) {
+              accomp.assegnato = false;
+              accomp.confermato = false;
+            }
+          });
+        });
+      }
+    }
+  }*/
+
+  // metodo per settare lo stile dei nomi in base allo stato degli accompagnatori
+  isAssegnatoOrConfermato(i: number, j: number, direzione: number) {
+    let accompagnatore: Accompagnatore;
+    switch (direzione) {
+      case 0:
+        accompagnatore = this.corsa.fermateConAccAndata[i].accompagnatori[j];
+        break;
+      case 1:
+        accompagnatore = this.corsa.fermateConAccRitorno[i].accompagnatori[j];
+        break;
+    }
+    if (accompagnatore.confermato) {
+      return 'accompagnatore-item-confirmed';
+    } else {
+      if (accompagnatore.assegnato) {
+        return 'accompagnatore-item-assigned';
+      } else {
+        return  'accompagnatore-item';
+      }
+    }
+
+  }
+
+  // metodo invocato quando l'utente cambia la linea da visualizzare
+  onSelectLinea(value: string) {
+    this.selectedLinea = value;
+    this.viewCorsaConTurni(this.selectedLinea, this.date); // Number(this.date)
+  }
+
+  onSelectDate(event: MatDatepickerInputEvent<Date>) {
+    this.date = new Date(event.value);
+    this.viewCorsaConTurni(this.selectedLinea, this.date); // Number(this.date)
+  }
+
+  consolidaTurno() {
+    /* TODO: popup */
+
+    this.tempAccompAndata.forEach(aTemp => {
+      const turno = new Turno(
+        this.corsa.nomeLinea, this.corsa.data, 0, aTemp.id, aTemp.fermataPartenzaId, aTemp.fermataArrivoId,
+        null, null, null
+      );
+      if (this.accompAndata.find(a => a.id === aTemp.id) === undefined) {
+        // new turno
+        /*this.listaTurniAddAndata.set(aTemp.id, turno); // this.listaTurniAdd.push(turno);
+        // console.log('listaTurniAddAndata: ', this.listaTurniAddAndata);*/
+        this.turnoAddSubA = this.amministratoreService.sendTurno(turno).subscribe({
+          next: value => {
+            const resp: any = value; // const turnoAggiunto = resp.turno;
+            this.updateAfterAdd(resp.turno, this.accompAndata);
+            this.updateView2(this.corsa.fermateConAccAndata, 'add', false,
+              resp.turno.fermataPartenza.id, resp.turno.fermataArrivo.id, false);
+          },
+          error: err => {
+            this.updateView2(this.corsa.fermateConAccAndata, 'add', true,
+              null, null, false);
+            // console.error(err);
+          },
+          complete: () => {
+            // console.log('turnoAdd Andata completato');
+          }
+        });
+      } else {
+        // edit turno
+        this.turnoModifySub = this.amministratoreService.modifyTurno(aTemp.idTurno, turno).subscribe({
+          next: value => {
+            this.updateAfterModify(turno, this.accompAndata);
+            this.updateView2(this.corsa.fermateConAccAndata, 'modify', false,
+              turno.fermataPartenzaId, turno.fermataArrivoId, false);
+          },
+          error: err => {
+            this.updateView2(this.corsa.fermateConAccAndata, 'modify', true,
+              turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            // console.error(err);
+          },
+          complete: () => console.log('turnoModify Andata completato')
+        });
+      }
+    });
+
+    this.accompAndata.forEach(a => {
+      if (this.tempAccompAndata.find(aTemp => aTemp.idTurno === a.idTurno) === undefined) {
+        // delete turno
+        this.turnoDeleteSub = this.amministratoreService.deleteTurno(a.idTurno).subscribe({
+          next: value => {
+            this.updateAfterDelete(this.accompAndata, a.id);
+            this.updateView2(this.corsa.fermateConAccAndata, 'delete', false,
+              null, null, false);
+          },
+          error: err => {
+            this.updateView2(this.corsa.fermateConAccAndata, 'delete', true,
+              turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            // console.error(err)
+          },
+          complete: () => console.log('turnoDelete Andata completato')
+        });
+      }
+    });
+
+
+    if (this.listaTurniAddAndata.size !== 0) { // .length
+      this.listaTurniAddAndata.forEach(turno => {
+        this.turnoAddSubA = this.amministratoreService.sendTurno(turno).subscribe({
+          next: value => {
+            const resp: any = value; // const turnoAggiunto = resp.turno;
+            this.updateAfterAdd(resp.turno, this.accompAndata);
+            this.updateView2(this.corsa.fermateConAccAndata, 'add', false,
+              resp.turno.fermataPartenza.id, resp.turno.fermataArrivo.id, false);
+            // this.updateViewAfterAdd(resp.turno, this.accompAndata, this.corsa.fermateConAccAndata, false);
+            /*console.log('Turno aggiunto per ' + turnoAggiunto.user.nome +
+                        ' da ' + turnoAggiunto.fermataPartenza.id +
+                        ' a ' + turnoAggiunto.fermataArrivo.id);
+            const a = new Accompagnatore(
+              turnoAggiunto.user.id, turnoAggiunto.user.nome, turnoAggiunto.user.cognome,
+              turnoAggiunto.user.email, turnoAggiunto.id, true, false,
+              turnoAggiunto.fermataPartenza.id, turnoAggiunto.fermataArrivo.id
+            );
+            this.accompAndata.push(a);
+            // console.log('Accompagnatori con turno all\'andata: ');
+            this.accompAndata.forEach(acc =>
+              // console.log(acc.nome + ' da ' + acc.fermataPartenzaId + ' a ' + acc.fermataArrivoId)
+            );*/
+          },
+          error: err => {
+            /*this.corsa.fermateConAccAndata.forEach(fermata => {
+              fermata.accompagnatori.forEach(accompagnatore => {
+                if (accompagnatore.id === turno.userId) {
+                  accompagnatore.assegnato = false; accompagnatore.confermato = false;
+                }
+              });
+            });*/
+            // this.updateViewAfterAdd(turno, this.accompAndata, this.corsa.fermateConAccAndata, true);
+            this.updateView2(this.corsa.fermateConAccAndata, 'add', true,
+              null, null, false);
+            // console.error(err);
+          },
+          complete: () => {
+            // console.log('turnoAdd Andata completato');
+          }
+        });
+      });
+    }
+    if (this.listaTurniAddRitorno.size !== 0) { // .length
+      this.listaTurniAddRitorno.forEach(turno => {
+        this.turnoAddSubR = this.amministratoreService.sendTurno(turno).subscribe({
+          next: value => {
+            /*const resp: any = value; const turnoAggiunto = resp.turno;
+            // console.log('Turno aggiunto per ' + turnoAggiunto.user.nome +
+              ' da ' + turnoAggiunto.fermataPartenza.id +
+              ' a ' + turnoAggiunto.fermataArrivo.id);
+            const a = new Accompagnatore(
+              turnoAggiunto.user.id, turnoAggiunto.user.nome, turnoAggiunto.user.cognome,
+              turnoAggiunto.user.email, turnoAggiunto.id, true, false,
+              turnoAggiunto.fermataPartenza.id, turnoAggiunto.fermataArrivo.id
+            );
+            this.accompRitorno.push(a);
+            // console.log('Accompagnatori con turno al ritorno: ');
+            this.accompRitorno.forEach(acc => console.log(acc.nome));*/
+            const resp: any = value; // const turnoAggiunto = resp.turno;
+            this.updateAfterAdd(resp.turno, this.accompRitorno);
+            this.updateView2(this.corsa.fermateConAccRitorno, 'add', false,
+              resp.turno.fermataPartenza.id, resp.turno.fermataArrivo.id, false);
+          },
+          error: err => {
+            /*this.corsa.fermateConAccRitorno.forEach(fermata => {
+              fermata.accompagnatori.forEach(accompagnatore => {
+                if (accompagnatore.id === turno.userId) {
+                  accompagnatore.assegnato = false; accompagnatore.confermato = false;
+                }
+              });
+            });
+            // console.error(err); */
+            this.updateView2(this.corsa.fermateConAccRitorno, 'add', true,
+              null, null, false);
+            // console.error(err);
+          },
+          complete: () => console.log('turnoAdd Ritorno completato')
+        });
+      });
+    }
+    if (this.listaTurniModify.size !== 0) {
+      this.listaTurniModify.forEach((turno, id, map) => {
+        this.turnoModifySub = this.amministratoreService.modifyTurno(id, turno).subscribe({
+          next: value => {
+            // mi ritorna 200 e campo vuoto
+            /*if (turno.direzione === 0) {
+              this.accompAndata.forEach(a => {
+                // console.log('ID dell\'accompagnatore: ', a.id);
+                if (a.id === turno.userId) {
+                  a.fermataPartenzaId = turno.fermataPartenzaId;
+                  a.fermataArrivoId = turno.fermataArrivoId;
+                  a.assegnato = true; a.confermato = false;
+                }
+              });
+              // console.log('Accompagnatori con turno all\'andata: ');
+              this.accompAndata.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId)
+              );
+            } else {
+              this.accompRitorno.forEach(a => {
+                if (a.id === turno.userId) {
+                  a.fermataPartenzaId = turno.fermataPartenzaId;
+                  a.fermataArrivoId = turno.fermataArrivoId;
+                  a.assegnato = true; a.confermato = false;
+                }
+              });
+              // console.log('Accompagnatori con turno al ritorno: ');
+              this.accompRitorno.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId));
+            }*/
+            if (turno.direzione === 0) {
+              this.updateAfterModify(turno, this.accompAndata);
+              this.updateView2(this.corsa.fermateConAccAndata, 'modify', false,
+                turno.fermataPartenzaId, turno.fermataArrivoId, false);
+            } else {
+              this.updateAfterModify(turno, this.accompRitorno);
+              this.updateView2(this.corsa.fermateConAccRitorno, 'modify', false,
+                turno.fermataPartenzaId, turno.fermataArrivoId, false);
+            }
+          },
+          error: err => {
+            /*let salitaVecchia = false; let discesaVecchia = false;
+            if (turno.direzione === 0) {
+              this.corsa.fermateConAccAndata.forEach(fermata => {
+                fermata.accompagnatori.forEach(accompagnatore => {
+                  if (accompagnatore.id === turno.userId) {
+                    if (fermata.id === turno.fermataPartenzaVecchiaId) {
+                      salitaVecchia = true;
+                    }
+                    if (salitaVecchia && !discesaVecchia) {
+                      accompagnatore.assegnato = true;
+                      accompagnatore.confermato = turno.wasConfirmed;
+                    } else {
+                      accompagnatore.assegnato = false;
+                      accompagnatore.confermato = false;
+                    }
+                    if (fermata.id === turno.fermataArrivoVecchiaId) {
+                      discesaVecchia = true;
+                    }
+                  }
+                });
+              });
+              // console.log('Accompagnatori con turno all\'andata: ');
+              this.accompAndata.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId)
+              );
+            } else {
+              this.corsa.fermateConAccRitorno.forEach(fermata => {
+                fermata.accompagnatori.forEach(accompagnatore => {
+                  if (accompagnatore.id === turno.userId) {
+                    if (fermata.id === turno.fermataPartenzaVecchiaId) {
+                      salitaVecchia = true;
+                    }
+                    if (salitaVecchia && !discesaVecchia) {
+                      accompagnatore.assegnato = true;
+                      accompagnatore.confermato = turno.wasConfirmed;
+                    } else {
+                      accompagnatore.assegnato = false;
+                      accompagnatore.confermato = false;
+                    }
+                    if (fermata.id === turno.fermataArrivoVecchiaId) {
+                      discesaVecchia = true;
+                    }
+                  }
+                });
+              });
+              // console.log('Accompagnatori con turno al ritorno: ');
+              this.accompRitorno.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId));
+            }*/
+            if (turno.direzione === 0) {
+              this.updateView2(this.corsa.fermateConAccAndata, 'modify', true,
+                turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            } else {
+              this.updateView2(this.corsa.fermateConAccRitorno, 'modify', true,
+                turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            }
+            // console.error(err);
+          },
+          complete: () => console.log('turnoModify completato')
+        });
+      });
+    }
+    if (this.listaTurniDelete.size !== 0) {
+      this.listaTurniDelete.forEach((turno, turnoId, map) => {
+        this.turnoDeleteSub = this.amministratoreService.deleteTurno(turnoId).subscribe({
+          next: value => {
+            // mi ritorna 200 e campo vuoto
+            if (turno.direzione === 0) {
+              /* this.accompAndata.splice(this.accompAndata.findIndex(a => a.id === turno.userId), 1);
+               // console.log('Accompagnatori con turno all\'andata: ');
+               this.accompAndata.forEach(a => console.log(a.nome));*/
+              this.updateAfterDelete(this.accompAndata, turno.userId);
+              this.updateView2(this.corsa.fermateConAccAndata, 'delete', false,
+                null, null, false);
+            } else {
+              /*this.accompRitorno.splice(this.accompRitorno.findIndex(a => a.id === turno.userId), 1);
+              // console.log('Accompagnatori con turno al ritorno: ');
+              this.accompRitorno.forEach(a => console.log(a.nome));*/
+              this.updateAfterDelete(this.accompRitorno, turno.userId);
+              this.updateView2(this.corsa.fermateConAccRitorno, 'delete', false,
+                null, null, false);
+            }
+          },
+          error: err => {
+            /*let salitaVecchia = false; let discesaVecchia = false;
+            if (turno.direzione === 0) {
+              this.corsa.fermateConAccAndata.forEach(fermata => {
+                fermata.accompagnatori.forEach(accompagnatore => {
+                  if (accompagnatore.id === turno.userId) {
+                    if (fermata.id === turno.fermataPartenzaVecchiaId) {
+                      salitaVecchia = true;
+                    }
+                    if (salitaVecchia && !discesaVecchia) {
+                      accompagnatore.assegnato = true;
+                      accompagnatore.confermato = turno.wasConfirmed;
+                    } else {
+                      accompagnatore.assegnato = false;
+                      accompagnatore.confermato = false;
+                    }
+                    if (fermata.id === turno.fermataArrivoVecchiaId) {
+                      discesaVecchia = true;
+                    }
+                  }
+                });
+              });
+              // console.log('Accompagnatori con turno all\'andata: ');
+              this.accompAndata.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId)
+              );
+            } else {
+              this.corsa.fermateConAccRitorno.forEach(fermata => {
+                fermata.accompagnatori.forEach(accompagnatore => {
+                  if (accompagnatore.id === turno.userId) {
+                    if (fermata.id === turno.fermataPartenzaVecchiaId) {
+                      salitaVecchia = true;
+                    }
+                    if (salitaVecchia && !discesaVecchia) {
+                      accompagnatore.assegnato = true;
+                      accompagnatore.confermato = turno.wasConfirmed;
+                    } else {
+                      accompagnatore.assegnato = false;
+                      accompagnatore.confermato = false;
+                    }
+                    if (fermata.id === turno.fermataArrivoVecchiaId) {
+                      discesaVecchia = true;
+                    }
+                  }
+                });
+              });
+              // console.log('Accompagnatori con turno al ritorno: ');
+              this.accompRitorno.forEach(a => console.log(
+                a.nome + ' da ' + a.fermataPartenzaId + ' a ' + a.fermataArrivoId));
+            }
+            // console.error(err);*/
+            if (turno.direzione === 0) {
+              this.updateView2(this.corsa.fermateConAccAndata, 'delete', true,
+                turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            } else {
+              this.updateView2(this.corsa.fermateConAccRitorno, 'delete', true,
+                turno.fermataPartenzaVecchiaId, turno.fermataArrivoVecchiaId, turno.wasConfirmed);
+            }
+          },
+          complete: () => console.log('turnoDelete completato')
+        });
+      });
+    }
+  }
+
+  setInfoCorsa(fermataAccompagnatori: any, accompAndataORitorno: Array<Accompagnatore>,
+               fermate: Array<FermataConAccompagnatori>) {
+    /* TODO: vedere se funziona, cioè se aggiorna effettivamente accompAndata/ritorno
+    *   e this.corsa.fermate... */
+    // prendo le informazioni della fermata
+    const fermata = fermataAccompagnatori.fermata;
+
+    // prendo la lista degli accompagnatori per la fermata
+    const acc: Array<any> = fermataAccompagnatori.userInfos;
+    const accompagnatori: Array<Accompagnatore> = [];
+    // tslint:disable-next-line:forin
+    for (const user in acc) {
+      /*TODO: prova a usare la struttura di accompagnatore coi turni dentro*/
+      const a = new Accompagnatore(
+        acc[user].user.id,  acc[user].user.nome, acc[user].user.cognome, acc[user].user.email,
+        acc[user].turnoId, acc[user].assegnato, acc[user].confermato, null, null);
+      accompagnatori.push(a);
+      if (a.assegnato || a.confermato) {
+        if (!accompAndataORitorno.includes(a)) {
+          // è la prima fermata a cui risulta assegnato
+          a.fermataPartenzaId = fermata.id;
+          a.fermataArrivoId = fermata.id;
+          accompAndataORitorno.push(a);
+        } else {
+          accompAndataORitorno.forEach(accomp => {
+            if (accomp.id === a.id) {
+              accomp.fermataArrivoId = fermata.id;
+            }
+          });
+        }
+      }
+    }
+    // aggiungo alle informazioni della fermata l'array di accompagnatori appena creato
+    fermate.push(new FermataConAccompagnatori(
+      fermata.id, fermata.descrizione, fermata.orario, accompagnatori)
+    );
+  }
+
+  /*updateViewAfterAdd(turnoAggiunto: any, accompagnatori: Accompagnatore[], fermate: FermataConAccompagnatori[],
+                     errore: boolean) {
+    if (!errore) {
+      // console.log('Turno aggiunto per ' + turnoAggiunto.user.nome +
+        ' da ' + turnoAggiunto.fermataPartenza.id +
+        ' a ' + turnoAggiunto.fermataArrivo.id);
+      const a = new Accompagnatore(
+        turnoAggiunto.user.id, turnoAggiunto.user.nome, turnoAggiunto.user.cognome,
+        turnoAggiunto.user.email, turnoAggiunto.id, true, false,
+        turnoAggiunto.fermataPartenza.id, turnoAggiunto.fermataArrivo.id
+      );
+      accompagnatori.push(a);
+      // console.log('Accompagnatori con turno: ');
+      accompagnatori.forEach(acc => console.log(acc.nome));
+    } else {
+      fermate.forEach(fermata => {
+        fermata.accompagnatori.forEach(accompagnatore => {
+          if (accompagnatore.id === turnoAggiunto.userId) { // turno.userId
+            accompagnatore.assegnato = false; accompagnatore.confermato = false;
+          }
+        });
+      });
+    }
+  }*/
+
+  updateAfterAdd(turnoAggiunto: any, accompagnatori: Accompagnatore[]) {
+    // console.log('Turno aggiunto per ' + turnoAggiunto.user.nome +
+      ' da ' + turnoAggiunto.fermataPartenza.id +
+      ' a ' + turnoAggiunto.fermataArrivo.id);
+    const a = new Accompagnatore(
+      turnoAggiunto.user.id, turnoAggiunto.user.nome, turnoAggiunto.user.cognome,
+      turnoAggiunto.user.email, turnoAggiunto.id, true, false,
+      turnoAggiunto.fermataPartenza.id, turnoAggiunto.fermataArrivo.id
+    );
+    accompagnatori.push(a);
+    // console.log('Accompagnatori con turno: ');
+    accompagnatori.forEach(acc => console.log(acc.nome));
+  }
+
+  updateAfterModify(turnoModificato: Turno, accompagnatori: Accompagnatore[]) {
+    accompagnatori.forEach(a => {
+      if (a.id === turnoModificato.userId) {
+        a.fermataPartenzaId = turnoModificato.fermataPartenzaId;
+        a.fermataArrivoId = turnoModificato.fermataArrivoId;
+        a.assegnato = true; a.confermato = false;
+        // console.log('Turno modificato per ' + a.nome +
+          ' da ' + a.fermataPartenzaId +
+          ' a ' + a.fermataArrivoId
+        );
+      }
+    });
+    // console.log('Accompagnatori con turno: ');
+    accompagnatori.forEach(acc => console.log(acc.nome));
+  }
+
+  updateAfterDelete(accompagnatori: Accompagnatore[], accompagnatoreID: string) {
+    accompagnatori.splice(accompagnatori.findIndex(a => a.id === accompagnatoreID), 1);
+    // console.log('Accompagnatori con turno: ');
+    accompagnatori.forEach(acc => console.log(acc.nome));
+  }
+
+  /*  */
+  updateView2(fermate: FermataConAccompagnatori[], action: string, error: boolean,
+              fermataSalitaId: string, fermataDiscesaId: string, wasConfirmed: boolean) {
+    // isAdd: boolean, isModify: boolean, isDelete: boolean
+    let foundSalita = false; let foundDiscesa = false;
+    fermate.forEach(fermata => {
+      fermata.accompagnatori.forEach(accompagnatore => {
+        if (((action === 'add') && error) || ((action === 'delete') && !error)) {
+          accompagnatore.assegnato = false; accompagnatore.confermato = false;
+        } else {
+          if (fermata.id === fermataSalitaId) { // turno.fermataPartenzaId
+            foundSalita = true;
+          }
+          if (foundSalita && !foundDiscesa) {
+            if (((action === 'add') && !error) || ((action === 'modify') && !error)) {
+              accompagnatore.assegnato = true; accompagnatore.confermato = false;
+            } else if (((action === 'modify') && error) || ((action === 'delete') && error)) {
+              accompagnatore.assegnato = true; accompagnatore.confermato = wasConfirmed; // turno.wasConfirmed
+            }
+          } else {
+            accompagnatore.assegnato = false; accompagnatore.confermato = false;
+          }
+          if (fermata.id === fermataDiscesaId) { // turno.fermataArrivoId
+            foundDiscesa = true;
+          }
+        }
+      });
+    });
+  }
+
+}

@@ -1,0 +1,50 @@
+.card-item {
+  background-color: oldlace;
+  color: darkslategray;
+  width: calc(100% - 19px);
+}
+
+.card-active {
+  width: calc(100% - 19px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-color: oldlace;
+  color: darkslategray;
+}
+
+.card-inactive {
+  width: calc(100% - 19px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background: rgba(253, 245, 230, 0.5);
+  color: darkslategray;
+}
+
+.date {
+  float: left;
+  margin: 1px 0 0 -16px;
+  font-weight: bold;
+  font-size: 20px !important;
+}
+
+.internal-div {
+  width: calc(50% - 20px) !important;
+  /*background-color: blueviolet;*/
+  margin: 8px;
+}
+
+.important {
+  color: coral;
+  font-weight: bold;
+}
+
+
+.no-elements {
+  margin: 0;
+  position: absolute;
+  top: 45%;
+  left: 60%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  color: oldlace;
+  /*width: 300px;*/
+}
+

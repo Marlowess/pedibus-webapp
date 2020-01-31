@@ -1,0 +1,59 @@
+<!--<div style="max-height: 70%;">-->
+<mat-card class="user-main-card">
+
+  <mat-card-title class="titolo" style="text-align: center">Promuovi o declassa</mat-card-title>
+
+  <mat-divider></mat-divider>
+  <br>
+
+  <mat-card-content style="height: calc(100% - 70px)">
+
+    <mat-card class="inner-card accompagnatori-card">
+      <mat-card-title>Accompagnatori</mat-card-title>
+
+      <mat-card-content class="users-content vertically-scrollable-content-blue">
+        <div *ngFor="let accompagnatore of promuoviDeclassa.accompagnatori">
+          <span>
+            <mat-checkbox style="margin-right: 4px"
+                          [checked]="accompagnatore.selezionato"
+                          (change)="promuoviCheckChanged(accompagnatore.id)">
+            </mat-checkbox>
+          </span>&nbsp;
+          <span>{{accompagnatore.nome}}</span>&nbsp;<span>{{accompagnatore.cognome}}</span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-footer style="margin: 6px 0 4px 0">
+        <button mat-raised-button (click)="promuovi()" [disabled]="disablePromuovi()" class="btn">
+          Promuovi ad amministratore
+        </button>
+      </mat-card-footer>
+
+    </mat-card>
+
+    <mat-card class="inner-card amministratori-card">
+      <mat-card-title>Amministratori</mat-card-title>
+
+      <mat-card-content class="users-content vertically-scrollable-content-blue">
+        <div *ngFor="let amministratore of promuoviDeclassa.amministratori">
+            <span>
+              <mat-checkbox style="margin-right: 4px"
+                            [checked]="amministratore.selezionato"
+                            (change)="declassaCheckChanged(amministratore.id)">
+              </mat-checkbox>
+            </span>&nbsp;
+          <span>{{amministratore.nome}}</span>&nbsp;<span>{{amministratore.cognome}}</span>
+        </div>
+      </mat-card-content>
+
+      <mat-card-footer style="margin: 6px 0 4px 0">
+        <button mat-raised-button (click)="declassa()" [disabled]="disableDeclassa()" class="btn">
+          Declassa ad accompagnatore
+        </button>
+      </mat-card-footer>
+
+    </mat-card>
+
+  </mat-card-content>
+
+</mat-card>

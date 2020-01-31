@@ -1,0 +1,52 @@
+.mat-dialog-actions {
+  float: right;
+  margin-top: 6px;
+  margin-bottom: -14px;
+}
+
+.ok {
+  /*background: rgba(253, 245, 230, 0.4);*/
+  background-color: gold;
+  color: white !important;
+}
+.ok:hover {
+  /*background-color: #0083a3;*/
+  /*background: rgba(253, 245, 230, 0.6);*/
+  background-color: orange;
+  color: cornsilk !important;
+}
+.ok:focus {
+  /*background: rgba(253, 245, 230, 0.4) !important;*/
+  background-color: gold !important;
+  color: white !important;
+}
+.ok:disabled {
+  background-color: gold !important;
+  color: white !important;
+  opacity: 1;
+  cursor: not-allowed;
+}
+.ok[disabled] {
+  background-color: gold !important;
+  color: white !important;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+
+
+.elimina {
+  background-color: crimson;
+  color: cornsilk !important;
+}
+.elimina:hover {
+  /*background-color: #0083a3;*/
+  /*background: rgba(253, 245, 230, 0.6);*/
+  background-color: #aa0000;
+  color: cornsilk !important;
+}
+.elimina:focus {
+  /*background: rgba(253, 245, 230, 0.4) !important;*/
+  background-color: crimson !important;
+  color: cornsilk !important;
+}

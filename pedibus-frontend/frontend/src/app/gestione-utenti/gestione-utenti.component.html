@@ -1,0 +1,97 @@
+<div class="gestione-utenti">
+  <mat-card class="gestione-utenti-card">
+    <mat-card-title>
+      <h1>Aggiungi un utente</h1>
+    </mat-card-title>
+
+    <mat-divider style="margin-top: 12px"></mat-divider>
+    <br>
+
+    <mat-card-content>
+      <div class="container">
+
+        <div *ngIf="!utenteInserito">
+          <form [formGroup]="profileForm" #form="ngForm"
+                (ngSubmit)="submitted ? cercaOppureAggiungi($event, form) : $event.preventDefault()">
+            <div style="margin-bottom: 6px">
+              <mat-form-field>
+                <input matInput id="email" formControlName="email" required>
+                <mat-placeholder class="placeholder">Email</mat-placeholder>
+                <mat-error *ngIf="profileForm.invalid">{{getErrorMessage()}}</mat-error>
+                <mat-error *ngIf=" profileForm.controls['email'].hasError('required')
+                                  && profileForm.controls['email'].touched">
+                  Inserisci un indirizzo email
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div style="margin-bottom: 4px">
+              <button type="submit" class="btn" mat-raised-button
+                      [disabled]="!form.form.valid"
+                      (click)="submitted = true;"> <!--style="font-size: 15px; height: 46px; line-height: 15px"-->
+                Aggiungi
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="utenteInserito">
+
+          <div *ngIf="nuovoUtente && !utenteAggiunto">
+            <h4>Nuovo utente</h4>
+            <div style="text-align: left; margin-left: 120px">
+              <div style="margin: 0 0 6px 0">
+                <mat-label>Email:
+                  <div style="width: 200px; text-align: center !important; display: inline-block;">
+                    {{utente.indirizzoEmail}}
+                  </div>
+                </mat-label>
+              </div>
+              <div>
+                <mat-label>Ruolo:</mat-label>
+                <mat-select style="width: 200px; background: oldlace; border-radius: 10px; margin-left: 5px;
+                                     text-align: center"
+                            placeholder="{{ruoloPlaceholder}}"
+                            (selectionChange)="onSelectRuolo($event.source.value)">
+                  <!-- [disabled]="!ruoloChanged"-->
+                  <mat-option *ngFor="let ruolo of ruoli" [value]="ruolo" style="font-size: 15px">
+                    {{ruolo}}
+                  </mat-option>
+                </mat-select>
+              </div>
+            </div>
+            <div style="margin: 18px 0 4px 10px">
+              <button mat-raised-button class="btn" (click)="salvaUtente()" [disabled]="!ruoloChanged">
+                Salva
+              </button>
+              <button mat-raised-button class="btn annulla" (click)="reset()" style="margin-left: 6px">
+                Annulla
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="!nuovoUtente && !utenteAggiunto">
+            <h4>Utente già presente</h4>
+            <div><mat-label>Email: {{utente.indirizzoEmail}}</mat-label></div>
+            <div><mat-label>Ruolo: {{utente.ruolo}}</mat-label></div>
+            <div style="margin: 10px 0 4px 0">
+              <button mat-raised-button class="btn" (click)="reset()">Indietro</button>
+            </div>
+          </div>
+
+          <div *ngIf="utenteAggiunto">
+            <h4>Nuovo utente aggiunto</h4>
+            <div><mat-label>Email: {{utente.indirizzoEmail}}</mat-label></div>
+            <div><mat-label>Ruolo: {{utente.ruolo}}</mat-label></div>
+            <div style="margin: 10px 0 4px 0">
+              <button mat-raised-button class="btn" (click)="reset()">OK</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

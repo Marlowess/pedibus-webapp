@@ -1,0 +1,42 @@
+version: "3"
+services:
+  angular:
+    build:
+      context: pedibus-frontend/
+      dockerfile: Dockerfile
+    image: pedibus_frontend_image:1.0.0
+    container_name: pedibus_frontend_container
+    ports:
+      - "80:4200"
+    depends_on: 
+      - spring
+    links:
+      - spring
+    networks:
+      - mobility
+  spring:
+    hostname: spring
+    build:
+      context: pedibus-backend/
+      dockerfile: Dockerfile
+    image: pedibus_backend_image:1.0.0
+    container_name: pedibus_backend_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    networks:
+      - mobility
+  mongo:
+    hostname: mongo
+    container_name: localmongo1
+    image: mongo:latest
+    command: mongod
+    networks:
+      - mobility
+networks:
+  mobility:
+    driver: bridge
+

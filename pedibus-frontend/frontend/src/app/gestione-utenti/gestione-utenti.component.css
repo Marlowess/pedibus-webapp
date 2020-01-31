@@ -1,0 +1,38 @@
+.gestione-utenti {
+  position: absolute;
+  top: 50%;
+  left: calc(50%);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  max-height: 70%;
+}
+
+.gestione-utenti-card {
+  background: rgba(0,160,199, 0.7);
+  color: cornsilk;
+  max-height: 500px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+h1 {
+  color: cornsilk;
+}
+
+mat-card-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.container {
+  width: 500px;
+  text-align: center;
+}
+
+.placeholder {
+  color: cornsilk;
+}
+
+.mat-hint {
+  color: cornsilk;
+}

@@ -1,0 +1,50 @@
+<div>
+  <h1 mat-dialog-title style="margin-bottom: 6px">Aggiungi un bambino</h1>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="bambinoForm" #form="ngForm"
+        (ngSubmit)="submitted ? onSubmit($event, form): $event.preventDefault()">
+
+    <div class="form-group">
+      <mat-form-field style="margin-top: 12px"
+                      matTooltip="Inserire un nome fra i 2 e i 20 caratteri">
+        <input matInput value="" #inputNome maxlength="20" style=""
+               id="nome" formControlName="nome" required>
+        <mat-placeholder class="placeholder">Nome</mat-placeholder>
+        <mat-hint align="end">{{inputNome.value?.length || 0}}/20</mat-hint>
+        <mat-error *ngIf="bambinoForm.controls['nome'].hasError('required')
+                       && bambinoForm.controls['nome'].touched">
+          Inserisci un nome
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-group">
+      <mat-form-field class=""
+                      matTooltip="Inserire un cognome fra i 2 e i 20 caratteri">
+        <input matInput value="" #inputCognome maxlength="20"
+               id="cognome" formControlName="cognome" required>
+        <mat-placeholder class="placeholder">Cognome</mat-placeholder>
+        <mat-hint align="end">{{inputCognome.value?.length || 0}}/20</mat-hint>
+        <mat-error *ngIf="bambinoForm.controls['cognome'].hasError('required')
+                       && bambinoForm.controls['cognome'].touched"
+                    class="form-field-error">
+          Inserisci un cognome
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <button mat-raised-button class="btn" [disabled]="!form.form.valid" (click)="submitted = true;">
+        Aggiungi
+      </button> <!--[mat-dialog-close]="aggiungi()"-->
+      <button mat-raised-button class="btn annulla" style="margin-left: 8px" (click)="annulla()"> Annulla </button>
+    </div>
+
+  </form>
+
+</div>
+
+
+

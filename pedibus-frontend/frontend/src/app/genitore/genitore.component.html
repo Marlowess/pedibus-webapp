@@ -1,0 +1,39 @@
+<div class="bg-image"></div>
+<div class="user-main-div">
+
+  <div class="pagina-corrente">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="azioni">
+
+    <mat-card class="azione" routerLink="profilo" routerLinkActive="router-link-active">
+      <mat-card-title>Profilo</mat-card-title>
+      <mat-card-content>
+        <p>Modifica il tuo profilo</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="azione" routerLink="prenotazioni" routerLinkActive="router-link-active">
+      <mat-card-title>Prenotazioni</mat-card-title>
+      <mat-card-content>
+        <p>Aggiungi o elimina una prenotazione</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="azione" routerLink="mappa-fermate" routerLinkActive="router-link-active">
+      <mat-card-title>Mappa</mat-card-title>
+      <mat-card-content>
+        <p>Visualizza le fermate</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="azione" routerLink="comunicazioni" routerLinkActive="router-link-active">
+      <mat-card-title>Comunicazioni</mat-card-title>
+      <mat-card-content>
+        <p>Visualizza le comunicazioni</p>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

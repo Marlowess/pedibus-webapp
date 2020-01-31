@@ -1,0 +1,218 @@
+<!--<div style="max-height: 70%;" *ngIf="DEBUG_MODE_PRENOTAZIONI_COMPONENT && flagRawData">-->
+<mat-card class="user-main-card">
+
+  <!-- START MENU SELEZIONE BAMBINO, LINEA, DATA -->
+  <div class="header"> <!-- style=" background-color: hotpink" -->
+    <mat-card-title>
+      <h2 class="titolo" style="margin-bottom: 0">Prenotazioni</h2>
+      <mat-card-subtitle *ngIf="!noBambini">
+        <h4 *ngIf="flagRawData" style="color: oldlace; margin-bottom: 20px;">
+          dal {{dataInizio | date: 'dd/MM/yyyy'}}
+          <br>al {{dataFine | date: 'dd/MM/yyyy'}}
+        </h4>
+
+        <div fxLayout="column">
+          <div style="margin-bottom: 0px">
+            <div><mat-label class="linea-label">Bambino:</mat-label></div>
+            <mat-select style="max-width: 170px; background: oldlace; border-radius: 10px;"
+                        placeholder="{{selectedBambino}}"
+                        (selectionChange)="onSelectBambino($event.source.value)">
+              <mat-option class="linea-option" *ngFor="let bambino of listaBambini" [value]="bambino">
+                {{ bambino }}
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+
+        <div style="margin-left: -8px; margin-bottom: 30px">
+          <mat-datepicker-toggle matSuffix [for]="dpPren">
+          </mat-datepicker-toggle>
+          <input [min]="minDate" [max]="maxDate" [matDatepicker]="dpPren"
+                 placeholder="{{selectedDate | date: 'dd/MM/yyyy'}}"
+                 class="date-input" disabled (dateChange)="onSelectDate($event)">
+          <mat-datepicker #dpPren touchUi disabled="false" [startAt]="selectedDate"></mat-datepicker>
+        </div>
+
+        <button mat-raised-button class="btn" (click)="openDialogCreaPrenotazione(null, null)">
+          Nuova prenotazione
+        </button>
+
+      </mat-card-subtitle>
+    </mat-card-title>
+  </div>
+  <!-- END MENU SELEZIONE BAMBINO, LINEA, DATA -->
+
+  <mat-card-content class="user-main-card-content vertically-scrollable-content-white">
+
+    <!--<div class="example-large-box mat-elevation-z4" *ngIf="flagDefaultMessage"
+         style="height: 450px; text-align: center; padding: 10px">
+      <h1 style="color: white; font-size: 20px; margin: 200px; margin-top: 50px">
+      In questa sezione puoi gestire le prenotazioni associate a un bambino.
+      <br>Per cominciare seleziona un bambino dal riquadro qui a fianco
+      </h1>
+    </div>-->
+
+    <div *ngIf="noBambini">
+      <h3 class="no-elements">
+        Non hai ancora registrato
+        <br>nessun bambino.
+        <br>Visita la sezione Profilo
+        <br>per registrare i bambini
+      </h3>
+    </div>
+
+    <div *ngIf="noPrenotazioni">
+      <h3 class="no-elements">
+        Non hai prenotazioni
+        <br>dal {{dataInizio | date: 'dd/MM/yyyy'}}
+        <br>al {{dataFine | date: 'dd/MM/yyyy'}}
+      </h3>
+    </div>
+
+    <div *ngIf="!flagDefaultMessage && !noBambini && !noPrenotazioni" style="margin-bottom: 4px"
+         fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch">
+
+      <div *ngFor="let prenotazione of listaPrenotazioni; let i = index" >
+        <mat-card class="card-item"
+                  *ngIf="prenotazione.andata!='empty-prenotazione'
+                  || prenotazione.ritorno!='empty-prenotazione'"
+                  [ngClass]="(isTooLate(prenotazione.andata) && isTooLate(prenotazione.ritorno))
+                             ? 'card-inactive' : 'card-active'"
+                  [matTooltipDisabled]="!(isTooLate(prenotazione.andata) && isTooLate(prenotazione.ritorno))"
+                  matTooltip="Prenotazioni non più modificabili">
+
+          <mat-card-header style="margin-left: 6px">
+            <!--<div mat-card-avatar>
+              <mat-icon>departure_board</mat-icon>
+            </div>-->
+            <mat-card-title class="date" *ngIf="prenotazione.andata!='empty-prenotazione'">
+              {{ prenotazione.andata.data | date: 'EEEE, d MMMM y'}}
+            </mat-card-title>
+            <mat-card-title class="date" *ngIf="prenotazione.andata=='empty-prenotazione'
+                                             && prenotazione.ritorno!='empty-prenotazione'">
+              {{ prenotazione.ritorno.data | date: 'EEEE, d MMMM y'}}
+              <!-- fromStringToDate(prenotazione.ritorno.dataPrenotazione) -->
+            </mat-card-title>
+          </mat-card-header>
+
+          <div fxLayout="row" style="display: flex; margin-right: -8px">
+            <div class="internal-div" style="margin-right: 20px">
+
+              <div *ngIf="prenotazione.andata!='empty-prenotazione'"
+                     matTooltip="Prenotazione non più modificabile"
+                     [matTooltipDisabled]="!isTooLate(prenotazione.andata) ||
+                     (isTooLate(prenotazione.andata) && isTooLate(prenotazione.ritorno))"
+                     style="margin-top: -10px; text-align: left">
+                  <h4>Andata <span style="font-size: 15px;">({{prenotazione.andata.nomeLinea}})</span></h4>
+
+                  <div *ngIf="prenotazione.andata.fermataSalita.indirizzo != undefined">
+                    <mat-label>
+                      <span class="important">{{prenotazione.andata.fermataSalita.orario}}</span> -
+                      Partenza da
+                      <span class="important" matTooltip="{{prenotazione.andata.fermataSalita.descrizione}}">
+                        {{prenotazione.andata.fermataSalita.indirizzo}}</span>
+                    </mat-label>
+                  </div>
+
+                  <div *ngIf="prenotazione.andata.fermataDiscesa.indirizzo != undefined">
+                    <mat-label>
+                      <span class="important">{{prenotazione.andata.fermataDiscesa.orario}}</span> -
+                      Arrivo a scuola
+                      <!--<span class="important" matTooltip="{{prenotazione.andata.fermataDiscesa.indirizzo}}">
+                        scuola</span>-->
+                    </mat-label>
+                  </div>
+
+                  <div *ngIf="prenotazione.andata!='empty-prenotazione' && !isTooLate(prenotazione.andata)"
+                       style="margin-top: 12px">
+                    <span>
+                      <button mat-raised-button class="btn" style="font-size: 14px"
+                              (click)="openDialogCreaPrenotazione(i, true)"
+                              matTooltip="Modifica la prenotazione all'andata">
+                        Modifica
+                      </button>
+                    </span>
+
+                    <span>
+                      <button style="margin-left: 6px; font-size: 14px"
+                              mat-raised-button class="btn"
+                              (click)="deletePrenotazione(i, true)"
+                              matTooltip="Elimina la prenotazione all'andata">
+                        Elimina
+                      </button>
+                    </span>
+                  </div>
+
+                </div>
+
+              <div *ngIf="prenotazione.andata=='empty-prenotazione'" style="margin-left: -100px">
+                <h4>
+                  Nessuna prenotazione
+                  <br>all'andata
+                  <br>per questa data
+                </h4>
+              </div>
+
+            </div>
+
+            <div class="internal-div" style="margin-right: 0">
+
+              <div *ngIf="prenotazione.ritorno!='empty-prenotazione'"
+                   matTooltip="Prenotazione non più modificabile"
+                   [matTooltipDisabled]="!isTooLate(prenotazione.ritorno) ||
+                     (isTooLate(prenotazione.andata) && isTooLate(prenotazione.ritorno))"
+                   style="margin-top: -10px; text-align: left; margin-left: 16px">
+                  <h4>Ritorno <span style="font-size: 15px;">({{prenotazione.ritorno.nomeLinea}})</span></h4>
+
+                  <div *ngIf="prenotazione.ritorno.fermataSalita.indirizzo != undefined">
+                    <mat-label>
+                      <span class="important">{{prenotazione.ritorno.fermataSalita.orario}}</span> -
+                      Partenza da scuola
+                    </mat-label>
+                  </div>
+                  <div>
+                    <mat-label>
+                      <span class="important">{{prenotazione.ritorno.fermataDiscesa.orario}}</span> -
+                      Arrivo in <span class="important" matTooltip="{{prenotazione.ritorno.fermataDiscesa.descrizione}}">
+                      {{prenotazione.ritorno.fermataDiscesa.indirizzo}}</span>
+                    </mat-label>
+                  </div>
+
+                  <div *ngIf="prenotazione.ritorno!='empty-prenotazione' && !isTooLate(prenotazione.ritorno)"
+                       style="margin-top: 12px">
+                    <span>
+                      <button mat-raised-button class="btn" style="font-size: 14px"
+                              (click)="openDialogCreaPrenotazione(i, false)"
+                              matTooltip="Modifica la prenotazione al ritorno">
+                        Modifica
+                      </button>
+                    </span>
+
+                    <span>
+                      <button style="margin-left: 6px; font-size: 14px"
+                              mat-raised-button class="btn"
+                              (click)="deletePrenotazione(i, false)"
+                              matTooltip="Elimina la prenotazione al ritorno">
+                        Elimina
+                      </button>
+                    </span>
+                  </div>
+                </div>
+
+              <div *ngIf="prenotazione.ritorno=='empty-prenotazione'" style="margin-left: -100px">
+                <h4>
+                  Nessuna prenotazione
+                  <br>al ritorno
+                  <br>per questa data
+                </h4>
+              </div>
+
+            </div>
+
+          </div>
+
+        </mat-card>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

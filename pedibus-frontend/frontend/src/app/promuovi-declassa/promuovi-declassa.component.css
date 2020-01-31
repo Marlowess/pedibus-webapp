@@ -1,0 +1,33 @@
+.promuovi-declassa-card {
+  background: rgba(0,160,199, 0.6);
+  /*max-height: 500px;*/
+  border-radius: 10px;
+  text-align:center;
+  height: 100%;
+}
+
+.inner-card {
+  background-color: oldlace;
+  color: darkslategray;
+  margin-top: 10px;
+  width: 360px;
+  height: calc(100% - 30px);
+  border-radius: 10px;
+}
+
+.accompagnatori-card {
+  float: left;
+  margin-left: 63px;
+}
+
+.amministratori-card {
+  float: right;
+  margin-right: 63px;
+}
+
+.users-content {
+  height: calc(100% - 95px);
+  text-align: left;
+  margin-left: 100px;
+  overflow-y: auto;
+}

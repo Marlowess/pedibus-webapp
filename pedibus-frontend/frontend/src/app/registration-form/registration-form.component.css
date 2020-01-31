@@ -1,0 +1,127 @@
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.bg-image{
+  /* The image used */
+  background-image: url("../54wtwertrestrestgersgs2.jpeg");
+  /* Full height */
+  height: 100%;
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  filter: blur(4px);
+  -webkit-filter: blur(4px);
+}
+
+.register-form {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+
+  max-height: 70%;
+}
+
+mat-card {
+  /*min-width: 300px;
+  max-width: 300px;*/
+  /*max-width: 50%;*/
+  top: 20px;
+  min-width: 80%;
+  background: rgba(0,160,199, 0.7);
+  color: cornsilk;
+  max-height: 500px;
+  border-radius: 10px;
+}
+
+mat-card-title {
+}
+
+h1 {
+  color: cornsilk;
+}
+
+mat-card-header {
+  text-align: center;
+}
+
+mat-card-content {
+  max-height: 300px;
+  /*overflow-y: auto;*/
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: oldlace transparent;
+}
+
+/*mat-card-content::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: transparent;
+  scrollbar-track-color: transparent;
+}
+
+mat-card-content::-webkit-scrollbar {
+  width: 12px;
+  background-color: transparent;
+}
+
+mat-card-content::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: cornsilk;
+}*/
+
+.container {
+  max-width: 500px;
+  alignment: center;
+}
+
+.example-full-width {
+  width: 400px;
+  color: cornsilk;
+}
+
+::ng-deep .mat-focused .mat-form-field-label {
+  /*change color of label*/
+  color: cornsilk !important;
+}
+
+::ng-deep.mat-form-field-underline {
+  /*change color of underline*/
+  background-color: cornsilk !important;
+}
+
+.placeholder {
+  color: cornsilk;
+}
+
+.mat-hint {
+  color: cornsilk;
+}
+
+.btn {
+  width: 100px;
+  height: 46px;
+  background-color: coral;
+  border-color: coral;
+  border-radius: 18px;
+  font-size: 16px;
+  color: cornsilk;
+  opacity: 1;
+}
+
+.btn:hover {
+  background-color: #e86f43;
+  border-color: #e86f43;
+}
+
+.button {
+  text-align: center;
+}

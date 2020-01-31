@@ -1,0 +1,56 @@
+.consolida-turno {
+  font-size: 15px;
+  height: 46px;
+  line-height: 15px;
+  margin: 16px 2px 0 -2px;
+  border-radius: 10px;
+}
+
+/*.warning {
+  background-color: coral;
+  border-radius: 4px;
+  !*box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.19);*!
+  padding: 5px;
+}*/
+
+.card-active {
+  display: block;
+  width: 98%;
+  /*padding: 7px;*/
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background-color: oldlace;
+  color: darkslategray;
+}
+
+.card-inactive {
+  display: block;
+  width: 98%;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background: rgba(253, 245, 230, 0.5);
+  color: darkslategray;
+}
+
+
+.accompagnatore-item {
+  /*font-size: small;
+  color: darkslategray;*/
+  font-style: normal;
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.accompagnatore-item-assigned{
+  font-size: small;
+  color: darkslategray;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.accompagnatore-item-confirmed {
+  font-size: small;
+  color: coral; /*color: #00A0C7;*/
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 3px;
+}

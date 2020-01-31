@@ -1,0 +1,79 @@
+{
+  "nome": "linea_1",
+  "admin_email": ["mario.rossi@gmail.com"],
+  "fermate_andata": [
+    {
+      "direzione": "andata",
+      "indirizzo": "C.so Duca degli abruzzi 24",
+      "descrizione": "Ingresso Politecnico",
+      "orario": "07:15",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.662360, 45.062450
+        ]
+      }
+    },
+    {
+      "direzione": "andata",
+      "indirizzo": "C.so Stati Uniti 95",
+      "descrizione": "Stazione biciclette [TO]BIKE",
+      "orario": "07:30",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.668470, 45.063560
+        ]
+      }
+    },
+    {
+      "direzione": "andata",
+      "indirizzo": "Via Sacchi 2",
+      "descrizione": "Scuola",
+      "orario": "07:45",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.677438, 45.062768
+        ]
+      }
+    }],
+
+  "fermate_ritorno": [
+    {
+      "direzione": "ritorno",
+      "indirizzo": "Via Sacchi 2",
+      "descrizione": "Scuola",
+      "orario": "13:00",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.677438, 45.062768
+        ]
+      }
+    },
+    {
+      "direzione": "ritorno",
+      "indirizzo": "C.so Stati Uniti 92",
+      "descrizione": "Panchina gialla",
+      "orario": "13:15",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.668470, 45.063560
+        ]
+      }
+    },
+    {
+      "direzione": "ritorno",
+      "indirizzo": "C.so Duca degli abruzzi 24",
+      "descrizione": "Ingresso Politecnico",
+      "orario": "13:30",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.662360, 45.062450
+        ]
+      }
+    }]
+}

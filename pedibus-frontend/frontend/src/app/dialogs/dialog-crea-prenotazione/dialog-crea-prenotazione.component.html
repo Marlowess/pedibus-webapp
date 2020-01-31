@@ -1,0 +1,181 @@
+<div *ngIf="flagCreaPrenotazione">
+  <!--DIV PRENOTAZIONE ANDATA START -->
+  <!--<mat-card class="mat1" style="background-color: rgba(0,160,199, 0.6)">
+    <mat-card-content>-->
+      <!--  Lista Linee -->
+  <h1 mat-dialog-title>
+    Nuova prenotazione
+    <br>dal {{dataInizio | date: 'dd/MM/yyyy'}} al {{dataFine | date: 'dd/MM/yyyy'}}
+  </h1>
+
+  <mat-tab-group #tabGroup mat-align-tabs="center" (selectedTabChange)="tabChanged($event)">
+    <mat-tab label="Andata" *ngIf="flagDirezione || flagCreaPrenotazione">
+
+      <div *ngIf="flagCreaPrenotazione" style="margin-top: 10px">
+        <mat-datepicker-toggle matSuffix [for]="dpAndata"></mat-datepicker-toggle>
+        <input [min]="dataInizio" [max]="dataFine" [matDatepicker]="dpAndata" disabled
+               [matDatepickerFilter]="dateFilter"
+               placeholder="Seleziona una data" class="date-input" style="width: 140px"
+               (dateChange)="onDateSelect('change', $event)">
+        <mat-datepicker #dpAndata touchUi disabled="false" [startAt]="startDate"></mat-datepicker>
+      </div>
+
+      <div *ngIf="flagLinee" style="">
+        <mat-label  class="linea-label" style="">Linea:</mat-label>
+        <mat-select style="margin-left: 32px; max-width: 240px;" class="fermata-select"
+                    placeholder="Seleziona una linea" (selectionChange)="onSelectLinea($event.source.value)">
+          <mat-option *ngFor="let linea of listaLinee" [value]="linea" class="linea-option">
+            {{ linea }}
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <div *ngIf="flagFermateAndata">
+        <mat-label class="linea-label" style="">Partenza:</mat-label>
+        <mat-select style="margin-left: 4px; max-width: 240px;" class="fermata-select"
+          [disabled]="disabledSelectorAndata" placeholder="Seleziona una fermata"
+          (selectionChange)="onSelectFermataAndata($event.source.value, true)">
+          <mat-option *ngFor="let fermata of listaFermateAndata" [value]="fermata" class="linea-option">
+            {{ fermata.indirizzo }}
+            <!--| {{ fermata.descrizione }} -->
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <div style="margin: 20px 0 4px 0">
+        <button mat-raised-button class="btn" [disabled]="disabledSalvaPrenotazioneAndata"
+                (click)="onClickSalva(true)" cdkFocusInitial style="width: 330px">
+          Salva la prenotazione all'andata
+        </button>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Ritorno" *ngIf="!flagDirezione || flagCreaPrenotazione">
+
+      <div *ngIf="flagCreaPrenotazione" style="margin-top: 10px">
+        <mat-datepicker-toggle matSuffix [for]="dpRitorno"></mat-datepicker-toggle>
+        <input [min]="dataInizio" [max]="dataFine" [matDatepicker]="dpRitorno" disabled
+               [matDatepickerFilter]="dateFilter"
+               placeholder="Seleziona una data" class="date-input" style="width: 140px"
+               (dateChange)="onDateSelect('change', $event)">
+        <mat-datepicker #dpRitorno touchUi disabled="false" [startAt]="startDate"></mat-datepicker>
+      </div>
+
+      <div *ngIf="flagLinee" style="">
+        <mat-label class="linea-label">Linea:</mat-label>
+        <mat-select style="margin-left: 22px; max-width: 240px;" class="fermata-select"
+          placeholder="Seleziona una linea" (selectionChange)="onSelectLinea($event.source.value)">
+          <mat-option *ngFor="let linea of listaLinee" [value]="linea" class="linea-option">
+            {{ linea }}
+          </mat-option>
+        </mat-select>
+      </div>
+
+      <!--            <div *ngIf="flagFermateRitorno">
+                    <mat-label style="color: oldlace; font-size: large; alignment: left">Linea:</mat-label>
+                    <mat-select style="max-width: 50px; background: oldlace; border-radius: 10px; margin-left: 5px;"
+                                [disabled]="disabledSelectorRitorno" placeholder="seleziona linea"
+                                (selectionChange)="onSelectFermataRitorno($event.source.value, true)">
+                      <mat-option *ngFor="let fermata of listaFermateRitorno" [value]="fermata.id" style="font-size: 15px">
+                        {{ fermata.indirizzo }}
+                      </mat-option>
+                    </mat-select>
+                  </div>-->
+
+      <div *ngIf="flagFermateRitorno">
+        <mat-label class="linea-label">Arrivo:</mat-label>
+        <mat-select style="margin-left: 20px; max-width: 240px;" class="fermata-select"
+          [disabled]="disabledSelectorRitorno" placeholder="Seleziona una fermata"
+          (selectionChange)="onSelectFermataRitorno($event.source.value, false)">
+          <mat-option *ngFor="let fermata of listaFermateRitorno" [value]="fermata" class="linea-option">
+            {{ fermata.indirizzo }} <br>
+            <!-- {{ fermata.descrizione }} <br> -->
+          </mat-option>
+        </mat-select>
+      </div>
+      <!--DIV PRENOTAZIONE RITORNO START -->
+
+      <div style="margin: 20px 0 4px 0">
+        <button mat-raised-button class="btn" [disabled]="disabledSalvaPrenotazioneRitorno"
+                (click)="onClickSalva(false)" style="width: 330px">
+          Salva la prenotazione al ritorno
+        </button>
+      </div>
+
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<div *ngIf="!flagCreaPrenotazione">
+  <h1 *ngIf="flagDirezione" mat-dialog-title>
+    Prenotazione per l'andata
+    <br>del {{preAndata.data | date: 'dd/MM/yyyy'}}
+  </h1>
+  <h1 *ngIf="!flagDirezione" mat-dialog-title>
+    Prenotazione per il ritorno
+    <br>del {{preRitorno.data | date: 'dd/MM/yyyy'}}
+  </h1>
+
+  <mat-divider style="margin: -10px 0 16px 0"></mat-divider>
+
+  <div *ngIf="flagLinee">
+    <mat-label class="linea-label">Linea:</mat-label>
+    <mat-select style="margin-left: 32px; max-width: 240px;" class="fermata-select"
+                placeholder="Seleziona una linea" (selectionChange)="onSelectLinea($event.source.value)">
+      <mat-option *ngFor="let linea of listaLinee" [value]="linea" class="linea-option">
+        {{ linea }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <div *ngIf="flagDirezione && flagFermateAndata">
+    <mat-label class="linea-label" style="">Partenza:</mat-label>
+    <mat-select style="margin-left: 4px; max-width: 240px;" class="fermata-select"
+                [disabled]="disabledSelectorAndata" placeholder="Seleziona una fermata"
+                (selectionChange)="onSelectFermataAndata($event.source.value, true)">
+      <mat-option *ngFor="let fermata of listaFermateAndata" [value]="fermata" class="linea-option">
+        {{ fermata.indirizzo }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <div *ngIf="!flagDirezione && flagFermateRitorno">
+    <mat-label class="linea-label">Arrivo:</mat-label>
+    <mat-select style="margin-left: 28px; max-width: 240px;" class="fermata-select"
+                [disabled]="disabledSelectorRitorno" placeholder="Seleziona una fermata"
+                (selectionChange)="onSelectFermataRitorno($event.source.value, false)">
+      <mat-option *ngFor="let fermata of listaFermateRitorno" [value]="fermata" class="linea-option">
+        {{ fermata.indirizzo }} <br>
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <div style="margin: 20px 0 4px 0">
+    <button *ngIf="flagDirezione" mat-raised-button class="btn" [disabled]="disabledSalvaPrenotazioneAndata"
+            (click)="onClickSalva(true)" style="
+            width: 330px">
+      Salva Prenotazione Andata
+    </button>
+
+    <button *ngIf="!flagDirezione" mat-raised-button class="btn" [disabled]="disabledSalvaPrenotazioneRitorno"
+            (click)="onClickSalva(false)" style="width: 330px">
+      Salva Prenotazione Ritorno
+    </button>
+  </div>
+
+</div>
+
+
+
+
+<!--Scelta fermate discesa andata -->
+<!--          <div *ngIf="flagFermateAndata">-->
+<!--            <mat-label style="color: oldlace; font-size: large; alignment: left">Linea:</mat-label>-->
+<!--            <mat-select style="max-width: 50px; background: oldlace; border-radius: 10px; margin-left: 5px;"-->
+<!--              [disabled]="disabledSelectorAndata" placeholder="seleziona linea"-->
+<!--              (selectionChange)="onSelectFermataAndata($event.source.value, false)">-->
+<!--              <mat-option *ngFor="let fermata of listaFermateAndata" [value]="fermata.id" style="font-size: 15px">-->
+<!--                {{ fermata.indirizzo }}-->
+<!--              </mat-option>-->
+<!--            </mat-select>-->
+<!--          </div>-->

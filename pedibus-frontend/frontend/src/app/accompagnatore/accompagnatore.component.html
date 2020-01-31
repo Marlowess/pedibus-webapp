@@ -1,0 +1,33 @@
+<div class="bg-image"></div>
+<div class="user-main-div">
+
+  <div class="pagina-corrente">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="azioni">
+
+    <mat-card class="azione" routerLink="disponibilita" routerLinkActive="router-link-active">
+      <mat-card-title>Disponibilità</mat-card-title>
+      <mat-card-content>
+        <p>Segnala o elimina la tua disponibilità per una corsa</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="azione" routerLink="presenze" routerLinkActive="router-link-active">
+      <mat-card-title>Presenze</mat-card-title>
+      <mat-card-content>
+        <p>Guarda i bambini presenti alle corse a te assegnate</p>
+        <!--<p>Guarda quali bambini saranno presenti alle corse in cui sei impegnato</p>-->
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="azione" routerLink="comunicazioni" routerLinkActive="router-link-active">
+      <mat-card-title>Comunicazioni</mat-card-title>
+      <mat-card-content>
+        <p>Visualizza le comunicazioni</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

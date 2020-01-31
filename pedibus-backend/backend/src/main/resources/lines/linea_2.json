@@ -1,0 +1,79 @@
+{
+  "nome": "linea_2",
+  "admin_email": ["mario.biondi@gmail.com"],
+  "fermate_andata": [
+    {
+      "direzione": "andata",
+      "indirizzo": "C.so Sommeiller 21",
+      "descrizione": "Incrocio via Sacchi - discoteca",
+      "orario": "07:15",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.671315, 45.055236
+        ]
+      }
+    },
+    {
+      "direzione": "andata",
+      "indirizzo": "Via Sacchi 30",
+      "descrizione": "Libreria La Montagna",
+      "orario": "07:30",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.674907, 45.059327
+        ]
+      }
+    },
+    {
+      "direzione": "andata",
+      "indirizzo": "Via Sacchi 2",
+      "descrizione": "Scuola",
+      "orario": "07:45",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.677438, 45.062768
+        ]
+      }
+    }],
+
+  "fermate_ritorno": [
+    {
+      "direzione": "ritorno",
+      "indirizzo": "Via Sacchi 2",
+      "descrizione": "Scuola",
+      "orario": "13:00",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.677438, 45.062768
+        ]
+      }
+    },
+    {
+      "direzione": "ritorno",
+      "indirizzo": "Via Gioberti 38",
+      "descrizione": "Negozio Casa Delle Lampadine",
+      "orario": "13:15",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.672996, 45.059971
+        ]
+      }
+    },
+    {
+      "direzione": "ritorno",
+      "indirizzo": "C.so Sommeiller 21",
+      "descrizione": "Banca Sella",
+      "orario": "13:30",
+      "gps": {
+        "type": "Point",
+        "coordinates": [
+          7.670594, 45.055807
+        ]
+      }
+    }]
+}

@@ -1,0 +1,254 @@
+<!--<div style="max-height: 70%;">-->
+<mat-card class="user-main-card">
+
+  <!-- HEADER ATTENDACE-COMPONENT: DIV STARTS HERE -->
+  <div class="header">
+    <mat-card-title>
+      <!-- style="margin-left: 16px; margin-right: 14px"-->
+      <h2 class="titolo">Presenze</h2>
+      <mat-card-subtitle>
+
+        <div>
+          <mat-label class="linea-label">Linea:</mat-label>
+          <mat-select placeholder="{{selectedLinea}}" class="linea-select"
+                      (selectionChange)="onSelectLinea($event.source.value)">
+            <mat-option *ngFor="let lineName of linesNames " [value]="lineName" class="linea-option">
+              {{ lineName }}
+            </mat-option>
+          </mat-select>
+        </div>
+
+        <div style="margin-left: -8px; margin-bottom: 5px">
+          <mat-datepicker-toggle matSuffix [for]="dpPresenze"></mat-datepicker-toggle>
+          <input [min]="minDate" [max]="maxDate" [matDatepicker]="dpPresenze"
+                 placeholder="{{date | date: 'dd/MM/yyyy'}}" class="date-input" disabled
+                 (dateChange)="onDateSelect('change', $event)">
+          <mat-datepicker #dpPresenze touchUi disabled="false" [startAt]="startDate"></mat-datepicker>
+        </div>
+
+        <div *ngIf="corsa !== null && !noCorsa && !corsa.getCompletataAndata()"
+             class="direttiva" style="margin-left: 6px">
+          Clicca sul nome di un bambino per indicarne la presa in carico
+        </div>
+        <!-- TODO: dopo che hai cliccato arrivati sostituiscila con la scritta 'corsa terminata'-->
+        <div *ngIf="isPastDay()">
+          Corsa terminata
+        </div>
+
+        <!--<div *ngIf="corsa" [hidden]="!corsaFlag" class="legenda">
+            <mat-label class="prenotato">Bambino prenotato</mat-label>
+            <br/><mat-label class="non-prenotato">Bambino non prenotato</mat-label>
+          </div>-->
+
+        <div *ngIf="!noCorsa" style="margin-top: 15px">
+          <button mat-raised-button class="btn" (click)="openDialogEsporta()"
+                  matTooltip="Esporta le presenze di questa corsa">
+            Esporta
+          </button>
+        </div>
+
+      </mat-card-subtitle>
+    </mat-card-title>
+  </div>
+  <!-- HEADER ATTENDACE-COMPONENT: DIV ENDS HERE -->
+
+  <mat-card-content style="height: 100%">
+
+    <!--<div *ngIf="noCorsa; else fermateCorsa">-->
+    <div *ngIf="noCorsa">
+      <h3 class="no-corsa">
+        {{date | date: 'EEEE, d MMMM y'}}
+        non hai turni per la linea {{selectedLinea}}
+        <!-- in data {{date | date: 'dd/MM/yyyy'}} -->
+      </h3>
+    </div>
+
+    <!-- === TABS TO SHOW CORSA OF A DAY === -->
+    <!--<ng-template #fermateCorsa style="height: 100%">-->
+    <div *ngIf="!noCorsa" style="height: 100%">
+      <mat-tab-group #tabGroup mat-align-tabs="center" animationDuration="0ms" style="height: 100%">
+
+        <!-- === TAB ANDATA === -->
+        <mat-tab *ngIf="flagRawData" label="Andata" style="height: 100%">
+
+          <ng-template #noFermateAndata>
+            <div class="message-no-direction">
+              <h3 class="no-andata-ritorno">
+                {{date | date: 'EEEE, d MMMM y'}}
+                non hai turni all'andata per la linea {{selectedLinea}}
+              </h3>
+              <!--{{giorni[date.getDay()]}} {{date.getDate()}} {{mesi[date.getMonth()]}} {{date.getFullYear()}}-->
+            </div>
+          </ng-template>
+
+          <div class="user-main-card-content vertically-scrollable-content-white"
+               *ngIf="!noAndata && corsa !== null; else noFermateAndata"
+               style="text-align: left">
+            <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch"
+                 style="margin-bottom: 4px">
+
+              <mat-card class="card-item" *ngFor="let fermata of corsa.fermateAndata"
+                        [ngClass]="getCardFermataStyle(fermata)"
+                        matTooltip="{{cardTooltip(fermata, 0)}}"
+                        [matTooltipDisabled]="fermata.inTurno || isPastDay()">
+                <!--matTooltip="{{dictTooltipFrasi.iconTurnoNonAssegnato}}"-->
+                <mat-card-header>
+                  <div mat-card-avatar>
+                    <mat-icon *ngIf="fermata.inTurno">place</mat-icon>
+                    <!-- matTooltip="{{dictTooltipFrasi.iconPlace}}"-->
+                    <!--<mat-icon class="rotate-180" *ngIf="!fermata.inTurno">format_color_reset</mat-icon>-->
+                    <mat-icon *ngIf="!fermata.inTurno" svgIcon="fermata_no_turno" class="fermata-no-turno"></mat-icon>
+                    <mat-icon class="clock">schedule</mat-icon>
+                  </div>
+
+                  <mat-card-title class="card-fermata-title">
+                    <span class="luogo-item">{{ fermata.descrizione }}</span>
+                    <div class="spacer-vertical">
+                      <div class="mask"></div>
+                    </div>
+                    <span class="indirizzo">{{fermata.indirizzo}}</span>
+                  </mat-card-title>
+                  <mat-card-subtitle class="orario-item">{{fermata.orario}}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="lista-persone-fermata">
+                  <div *ngIf="fermata.descrizione !== 'Scuola'">
+                    <!-- <h4></h4> -->
+                    <!-- <span style="font-size:16px;">Salgono: </span>-->
+                    <span *ngFor="let bambino of
+                            ordinaPasseggeriAlfabeticamente(fermata.salita, corsa.bambiniNonPrenotatiAndata);
+                            let i = index;" [ngClass]="getClass(bambino, true)"
+                          [ngStyle]="{'cursor': (fermata.inTurno && !isPastDay())? 'pointer' : 'default'}">
+
+                      <span *ngIf="fermata.inTurno && !isPastDay()"
+                            (click)="aggiornaStato(bambino, true, fermata, DIRECTION.FORWARD)" matTooltip="{{stato}}">
+                        <span>{{bambino.nome | titlecase}}</span>
+                      </span>&nbsp;
+                      <span *ngIf="!fermata.inTurno || isPastDay()">
+                        <span>{{bambino.nome | titlecase}}</span>
+                      </span>&nbsp;
+                    </span>
+                  </div>
+
+                  <div *ngIf="fermata.descrizione === 'Scuola'">
+                    <button #arrivati class="btn" (click)="openDialogPartitiOrArrivati(DIRECTION.FORWARD)"
+                            style="margin-left: -8px" mat-raised-button
+                            [disabled]="(corsa.getCompletataAndata() || !corsa.atLeastOneBambinoSalito()
+                                        && fermata.inTurno) || !fermata.inTurno || isPastDay()"
+                            [matTooltip]="getMessageArrivati()"
+                            [matTooltipDisabled]="!fermata.inTurno || isPastDay()">
+                      Arrivati
+                    </button>
+                  </div>
+
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- === END TAB ANDATA === -->
+
+        <!-- === TAB RITORNO === -->
+        <mat-tab *ngIf="flagRawData" label="Ritorno" style="height: 100%">
+
+          <ng-template #noFermateRitorno>
+            <div class="message-no-direction">
+              <h3 class="no-andata-ritorno">
+                {{date | date: 'EEEE, d MMMM y'}}
+                non hai turni al ritorno per la linea {{selectedLinea}}
+              </h3>
+            </div>
+          </ng-template>
+
+          <div class="user-main-card-content vertically-scrollable-content-white"
+               *ngIf="!noRitorno && corsa !== null; else noFermateRitorno"
+               style="text-align: left">
+            <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch"
+                 style="margin-bottom: 4px">
+              <mat-card class="card-item" *ngFor="let fermata of corsa.fermateRitorno; let i = index"
+                        [ngClass]="getCardFermataStyle(fermata)"
+                        matTooltip="{{cardTooltip(fermata, 1)}}"
+                        [matTooltipDisabled]="fermata.inTurno || isPastDay()">
+                <mat-card-header>
+                  <div mat-card-avatar>
+                    <mat-icon *ngIf="fermata.inTurno">place</mat-icon>
+                    <!--<mat-icon class="rotate-180" *ngIf="!fermata.inTurno">format_color_reset</mat-icon>-->
+                    <mat-icon *ngIf="!fermata.inTurno" svgIcon="fermata_no_turno" class="fermata-no-turno"></mat-icon>
+                    <mat-icon class="clock">schedule</mat-icon>
+                  </div>
+                  <mat-card-title class="card-fermata-title">
+                    <span class="luogo-item">{{ fermata.descrizione }}</span>
+                    <div class="spacer-vertical">
+                      <div class="mask"></div>
+                    </div>
+                    <span class="indirizzo">{{fermata.indirizzo}}</span>
+                  </mat-card-title>
+                  <mat-card-subtitle class="orario-item">{{fermata.orario}}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="lista-persone-fermata">
+                  <div *ngIf="fermata.descrizione !== 'Scuola'">
+                    <span *ngFor="let bambino of ordinaPasseggeriAlfabeticamente(fermata.discesa, null);"
+                         [ngClass]="getClass(bambino, true)"
+                         [ngStyle]="{'cursor': (fermata.inTurno && !isPastDay()) ? 'pointer' : 'default'}">
+                        <span>
+                          <span *ngIf="fermata.inTurno && !isPastDay()"
+                                (click)="aggiornaStato(bambino, false, fermata, DIRECTION.BACKWARD, i)"
+                                matTooltip="{{stato}}">
+                            <span>{{bambino.nome | titlecase}}</span>
+                          </span>&nbsp;
+                          <span *ngIf="!fermata.inTurno || isPastDay()">
+                            <span>{{bambino.nome | titlecase}}</span>
+                          </span>&nbsp;
+                        </span>
+                    </span>
+                  </div>
+
+                  <div *ngIf="fermata.descrizione === 'Scuola'">
+                    <div *ngIf="corsa.bambiniNonPrenotatiRitorno.length !== 0">
+                      <span *ngFor="let bambinoNonPrenotato of
+                            ordinaPasseggeriAlfabeticamente(corsa.bambiniNonPrenotatiRitorno, null)"
+                            [ngClass]="getClass(bambinoNonPrenotato, true)"
+                            [ngStyle]="{'cursor': (fermata.inTurno && !isPastDay()) ? 'pointer' : 'default'}">
+                        Bambini prenotabili:&nbsp;
+                        <span *ngIf="fermata.inTurno && !isPastDay()"
+                              (click)="aggiornaStato(bambinoNonPrenotato, false, fermata, DIRECTION.BACKWARD, i)"
+                              matTooltip="{{stato}}">
+                          <span>{{bambinoNonPrenotato.nome | titlecase}}</span>
+                        </span>&nbsp;
+                        <span *ngIf="!fermata.inTurno || isPastDay()">
+                          <span>{{bambinoNonPrenotato.nome | titlecase}}</span>
+                        </span>&nbsp;
+                      </span>
+                      <br>
+                      <br>
+                    </div>
+
+                    <button class="btn" (click)="openDialogPartitiOrArrivati(DIRECTION.BACKWARD)"
+                            style="margin-left: -6px" mat-raised-button
+                            [disabled]="(corsa.getPartitiRitorno() && fermata.inTurno)
+                                        || !fermata.inTurno || isPastDay()"
+                            [matTooltip]="getMessagePartiti()"
+                            [matTooltipDisabled]="!fermata.inTurno || isPastDay()">
+                      Partiti
+                    </button>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+        <!-- === END TAB RITORNO === -->
+
+      </mat-tab-group>
+    </div>
+    <!-- === END TABS TO SHOW CORSA OF A DAY === -->
+  </mat-card-content>
+
+</mat-card>
+<!--</div>-->
+
+
+<div *ngIf="DEBUG_MODE_ATTENDANCE_COMPONENT == true">
+  {{ debugMessageNotification | json }}
+</div>

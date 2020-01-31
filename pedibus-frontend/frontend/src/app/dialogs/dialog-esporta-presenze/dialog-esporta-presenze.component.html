@@ -1,0 +1,23 @@
+<div>
+  <h1 mat-dialog-title style="margin-bottom: 6px; color: oldlace">Esporta le presenze</h1>
+
+  <mat-divider></mat-divider>
+
+  <div style="margin-top: 20px">
+    <mat-label style="color: oldlace; font-size: 15px">Formato File:</mat-label>
+    <mat-select placeholder="{{typeFormatExportData}}" class="linea-select"
+                (selectionChange)="onSelectFormat($event.source.value)">
+      <mat-option *ngFor="let type of exportTypes" [value]="type">
+        {{ type }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <br/>
+
+  <div class="bottoni">
+    <button mat-raised-button class="btn" (click)="exportPresenze()">Esporta</button>
+    <button mat-raised-button class="btn annulla" style="margin-left: 8px" (click)="annulla()">Annulla</button>
+  </div>
+
+</div>

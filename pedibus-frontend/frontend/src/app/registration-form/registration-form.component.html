@@ -1,0 +1,133 @@
+<div class="bg-image"></div>
+
+<!-- <div *ngIf="!isLoggedIn()"> -->
+  <div>
+  <div class="register-form text-center">
+    <mat-card>
+      <mat-card-title>
+        <h1>Crea un account</h1>
+      </mat-card-title>
+
+      <mat-divider></mat-divider>
+      <br>
+
+      <mat-card-content>
+
+        <div class="container flex-center">
+
+          <form [formGroup]="profileForm" #registerForm="ngForm"
+                (ngSubmit)="submitted ? onSubmit($event, registerForm) : $event.preventDefault()">
+            <!-- (ngSubmit)="onSubmit($event, registerForm) -->
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width"
+                              matTooltip="Inserire un nome fra i 2 e i 20 caratteri">
+                <input matInput value="" #inputFirstName attr.maxlength="20"
+                       id="firstName" formControlName="firstName" required>
+                <mat-placeholder class="placeholder">Nome</mat-placeholder>
+                <mat-hint align="end">{{inputFirstName.value?.length || 0}}/20</mat-hint>
+                <!-- <mat-error *ngIf="">{{}}</mat-error> -->
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['firstName'].hasError('required')
+                              && profileForm.controls['firstName'].touched"
+                         style="color: red; display: block">
+                Il nome è richiesto
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width"
+                              matTooltip="Inserire un cognome fra i 2 e i 20 caratteri">
+                <!--                <mat-hint>Massimo 20 caratteri</mat-hint>-->
+                <input matInput value="" #inputLastName maxlength="20" id="lastName"
+                       formControlName="lastName" required>
+                <mat-placeholder class="placeholder">Cognome</mat-placeholder>
+                <mat-hint align="end">{{inputLastName.value?.length || 0}}/20</mat-hint>
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['lastName'].hasError('required')
+                              && profileForm.controls['lastName'].touched"
+                         style="color: red; display: block">
+                Il cognome è richiesto
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width"
+                              matTooltip="Inserire una email fra i 5 e i 20 caratteri">
+                <input matInput value="" id="email" formControlName="email" required>
+                <mat-placeholder class="placeholder">Email</mat-placeholder>
+                <mat-error *ngIf="profileForm.invalid">{{getErrorMessage()}}</mat-error>
+              </mat-form-field>
+              <mat-label *ngIf="profileForm.controls['email'].hasError('required')
+                             && profileForm.controls['email'].touched"
+                         style="color: red; display: block">
+                La email è richiesta
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width"
+                              matTooltip="La password deve essere almeno di 8 caratteri e deve contenere almeno
+                                          una maiuscola e un numero">
+                <input matInput value="" formControlName="password"
+                       [type]="hidePassword ? 'password' : 'text'" required>
+                <mat-placeholder class="placeholder">Password</mat-placeholder>
+                <button mat-icon-button matSuffix (click)="$event.preventDefault(); hidePassword = !hidePassword;">
+                  <!-- [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hidePassword" -->
+                  <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['password'].hasError('required')
+                              && profileForm.controls['password'].touched"
+                         style="color: red; display: block">
+                <!-- *ngIf=" profileForm.controls['password'].hasError('required') && profileForm.controls['password'].touched" -->
+                Inserire una password con almeno 8 caratteri e contenente almeno
+                una maiuscola e un numero
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width">
+                <input matInput value="" formControlName="repeatedPassword"
+                       [type]="hidePasswordR ? 'password' : 'text'" required>
+                <mat-placeholder class="placeholder">Reinserisci la password</mat-placeholder>
+                <!--<button mat-icon-button matSuffix
+                        (click)="$event.preventDefault(); hidePasswordR = !hidePasswordR;">
+                  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword_R"
+                  <mat-icon>{{hidePassword_R ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>-->
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['repeatedPassword'].hasError('required')
+                              && profileForm.controls['repeatedPassword'].touched"
+                         style="color: red; display: block">
+                <!-- *ngIf=" profileForm.controls['repeatedPassword'].hasError('required') && profileForm.controls['repeatedPassword'].touched" -->
+                Reinserisci la password
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-checkbox formControlName="acceptedConditions" required style="font-style: normal">
+                Accetto le condizioni
+              </mat-checkbox>
+              <div *ngIf = "profileForm.controls['acceptedConditions'].hasError('required')
+                         && profileForm.controls['acceptedConditions'].touched"
+                   style="color: red; display: block">
+                Campo richiesto
+              </div>
+            </div>
+
+            <mat-label *ngIf="registrationFailed" style="color: red; display: block">
+              Registrazione Fallita
+            </mat-label>
+            <div class="button">
+              <button type="submit" mat-raised-button class="btn" [disabled]="!registerForm.form.valid"
+                      (click)="submitted = true;" style="margin-bottom: 4px">Iscriviti</button>
+            </div>
+
+          </form>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

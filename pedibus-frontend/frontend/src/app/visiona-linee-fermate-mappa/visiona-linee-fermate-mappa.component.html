@@ -1,0 +1,102 @@
+<!--  Line list -->
+<div *ngIf="this.selectedLinea !== ''" style="height: 100%;">
+
+  <mat-tab-group mat-align-tabs="center" animationDuration="0ms" (selectedTabChange)="tabChanged($event)"
+                 style="height: 100%">
+
+    <mat-tab label="Andata" style="height: 100%">
+
+      <div> <!-- class="user-main-card-content vertically-scrollable-content-white"-->
+        <div style="height: 71vh">
+          <agm-map [latitude]="latA" [longitude]="lngA" [zoom]="mapZoom" [streetViewControl]="false">
+
+            {{latA}} <br> {{lngA}}
+
+            <agm-polyline [editable]="false" [strokeColor]="'darkslategray'">
+              <agm-polyline-point *ngFor="let fermataAndata of fermateAndata;"
+                                  [latitude]="fermataAndata.lat" [longitude]="fermataAndata.lng">
+              </agm-polyline-point>
+            </agm-polyline>
+
+            <div *ngFor="let fermataMarker of fermateAndata; index as i; first as first; last as last">
+              <agm-marker [latitude]="fermataMarker.lat" [longitude]="fermataMarker.lng"
+                          [iconUrl]="fermataMarker.icon"
+                          (markerClick)="updateMarkerRef(infoWindowA, 0)">
+                <agm-info-window #infoWindowA>
+                  <mat-card>
+                    <mat-card-header style="color: darkslategray">
+                      <mat-card-title *ngIf="first" style="">
+                        Partenza: {{fermataMarker.descrizione}}
+                      </mat-card-title>
+                      <mat-card-title *ngIf="!first && !last" style="">
+                        {{fermataMarker.descrizione}}
+                      </mat-card-title>
+                      <mat-card-title *ngIf="last" style="">
+                        Arrivo: {{fermataMarker.descrizione}}
+                      </mat-card-title>
+                      <mat-card-subtitle style="color:gray; font-size: 16px">
+                        {{fermataMarker.indirizzo}}
+                      </mat-card-subtitle>
+                    </mat-card-header>
+                  </mat-card>
+
+                </agm-info-window>
+              </agm-marker>
+            </div>
+
+          </agm-map>
+        </div>
+      </div>
+
+    </mat-tab>
+
+    <mat-tab label="Ritorno" style="height: 100%">
+
+        <div> <!-- class="user-main-card-content vertically-scrollable-content-white"-->
+          <div style="height: 71vh">
+            <agm-map [latitude]="latR" [longitude]="lngR" [zoom]="mapZoom" [streetViewControl]="false">
+
+              {{latR}} <br> {{lngR}}
+
+              <agm-polyline [editable]="false" [strokeColor]="'darkslategray'">
+                <agm-polyline-point *ngFor="let fermataRitorno of fermateRitorno;" [latitude]="fermataRitorno.lat"
+                                    [longitude]="fermataRitorno.lng">
+                </agm-polyline-point>
+              </agm-polyline>
+
+              <div *ngFor="let fermataMarker of fermateRitorno;  index as i; first as first; last as last">
+
+                <agm-marker [latitude]="fermataMarker.lat" [longitude]="fermataMarker.lng"
+                            [iconUrl]="fermataMarker.icon"
+                            (markerClick)="updateMarkerRef(infoWindowR, 1)">
+                  <agm-info-window #infoWindowR>
+                    <div>
+                      <mat-card>
+                        <mat-card-header>
+                          <mat-card-title *ngIf="first" style="">
+                            Partenza: {{fermataMarker.descrizione}}
+                          </mat-card-title>
+                          <mat-card-title *ngIf="!first && !last" style="">
+                            {{fermataMarker.descrizione}}
+                          </mat-card-title>
+                          <mat-card-title *ngIf="last" style="">
+                            Arrivo: {{fermataMarker.descrizione}}
+                          </mat-card-title>
+                          <mat-card-subtitle style="color:gray; font-size: 16px">
+                            {{fermataMarker.indirizzo}}
+                          </mat-card-subtitle>
+                        </mat-card-header>
+                      </mat-card>
+                    </div>
+                  </agm-info-window>
+                </agm-marker>
+              </div>
+
+            </agm-map>
+          </div>
+
+        </div>
+
+    </mat-tab>
+  </mat-tab-group>
+</div>

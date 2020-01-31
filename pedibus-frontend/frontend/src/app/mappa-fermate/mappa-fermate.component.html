@@ -1,0 +1,21 @@
+<mat-card class="user-main-card">
+  <div class="header" style="width: 150px">
+    <mat-card-title>
+      <h2 class="titolo">Mappa</h2>
+      <mat-card-subtitle>
+        <div>
+          <mat-label class="linea-label">Linea:</mat-label>
+          <mat-select class="linea-select" style="" placeholder="{{linea}}"
+                      (selectionChange)="onSelectLinea($event.source.value)">
+            <mat-option *ngFor="let linea of linee" [value]="linea" style="font-size: 15px">{{linea}}</mat-option>
+          </mat-select>
+        </div>
+
+      </mat-card-subtitle>
+    </mat-card-title>
+  </div>
+
+  <mat-card-content *ngIf="linea !== ''"> <!-- class="user-main-card-content vertically-scrollable-content-white"-->
+    <app-visiona-linee-fermate-mappa [selectedLinea]="linea"></app-visiona-linee-fermate-mappa>
+  </mat-card-content>
+</mat-card>

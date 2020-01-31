@@ -1,0 +1,168 @@
+body,
+html {
+  /*height: 100%;*/
+}
+
+.bg {
+  /* The image used */
+  background-image: url("54wtwertrestrestgersgs2.jpeg");
+  /*https://www.psychbytes.com/wp-content/uploads/2017/08/54wtwertrestrestgersgs.jpeg*/
+  /* Full height */
+  height: 100%;
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+mat-sidenav-container, mat-sidenav-content, mat-sidenav {
+  height: 100%;
+}
+
+mat-sidenav {
+  width: 250px;
+  background: linear-gradient(
+    to bottom,
+    #00A0C7,
+    rgba(0,160,199,0)
+  );
+  color: cornsilk;
+}
+
+/* a:not([href]){ */
+a {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  text-decoration: none;
+  color: floralwhite;
+}
+
+a:hover,
+a:active {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  text-decoration: none;
+  color: lightgray;
+}
+
+.navigation-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.icon {
+  display: inline-block;
+  height: 30px;
+  margin: 0 auto;
+  padding-right: 5px;
+  text-align: center;
+  vertical-align: middle;
+  width: 15%;
+}
+
+.label {
+  display: inline-block;
+  line-height: 30px;
+  width: 100%;
+  color: cornsilk;
+}
+
+.mat-toolbar.mat-primary {
+  /* background: #1976d2; */
+  color: cornsilk; /*colore 'Logout'*/
+}
+
+mat-toolbar.mat-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  /*box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .3);*/
+  background: linear-gradient(
+    to bottom,
+    #00A0C7,
+    rgba(0,160,199,0)
+  )
+}
+
+.mat-button:hover {
+  color: cornsilk;
+  /*background-color: #00A0C7;*/
+  opacity: 1;
+}
+
+mat-icon {
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+
+  background-repeat: no-repeat;
+  display: inline-block;
+  fill: currentColor;
+}
+
+mat-icon:hover {
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+
+  background-repeat: no-repeat;
+  display: inline-block;
+  fill: currentColor;
+  color: floralwhite;
+}
+
+.hamburger.mat-button:not(.starting) {
+  transition-duration: .4s;
+  transition-property: color,margin;
+  transition-timing-function: cubic-bezier(.25,.8,.25,1);
+}
+
+.user-button {
+  width: 42px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+  background-color: coral;
+  color: cornsilk;
+  font-size: 18px;
+}
+
+::ng-deep .mat-tooltip  {
+  white-space: pre-line !important;
+}
+
+/* ============================================================================================= */
+/*                                 NOTIFICATION CSS STYLE                                        */
+/* ============================================================================================= */
+
+.custom-style .angular-notification-icons-icon {
+  left: -10px;
+  background: yellow;
+  color: black;
+  width: 30px;
+  height: 30px;
+  font-weight: bolder;
+  font-size: 1.2em;
+}
+
+.angular-notification-icons-icon.my-custom-animation {
+  transition:0.5s linear all;
+}
+
+.angular-notification-icons-icon.my-custom-animation-add {
+  background: black;
+  color: white;
+}
+
+.angular-notification-icons-icon.my-custom-animation-add-active {
+  background: yellow;
+  color: black;
+}

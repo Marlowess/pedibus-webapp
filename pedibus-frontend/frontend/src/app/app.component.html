@@ -1,0 +1,240 @@
+<mat-sidenav-container>
+
+  <!-- === SIDE MENU TOOLBAR === START -->
+  <mat-sidenav #sidenav role="navigation">
+    <mat-nav-list style="text-align: center">
+
+      <div *ngIf="flagLoggedIn" style="font-size: small; text-align: center">
+        <button class="user-button" style="cursor: default">{{getUserInitials()}}</button>
+      </div>
+      <div *ngIf="flagLoggedIn" style="margin: 5px 0 10px 0">
+        {{getUserNomeCognome()}}
+      </div>
+
+      <div *ngIf="!flagLoggedIn" style="text-align: center">
+        <a mat-list-item routerLink="home-page" (click)="sidenav.toggle()">
+          <span class="label">Home</span>
+        </a>
+      </div>
+      <div *ngIf="flagLoggedIn">
+        <a mat-list-item routerLink="home-user" (click)="sidenav.toggle()">
+          <span class="label">Home</span>
+        </a>
+      </div>
+
+      <!--<div [hidden]="flagLoggedIn">
+        <a mat-list-item routerLink="/registration-form" matTooltip="Iscriviti se non hai ancora un account attivo"
+           (click)="sidenav.toggle()">
+          <span class="label">Iscriviti</span>
+        </a>
+      </div>-->
+
+      <div [hidden]="enableLogout">
+        <a mat-list-item routerLink="/login-form" matTooltip="Accedi tramite email e password"
+           (click)="sidenav.toggle()">
+          <span class="label">Accedi</span>
+        </a>
+      </div>
+
+
+      <div [hidden]="!enablePasseggeroActions" style="text-align: center">
+        <a mat-list-item routerLink="/genitore/profilo" matTooltip="Lista dei bambini e prenotazioni predefinite"
+           (click)="sidenav.toggle()">
+          <!--<mat-icon class="icon">input</mat-icon>-->
+          <span class="label">Profilo</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enablePasseggeroActions">
+        <a mat-list-item routerLink="/genitore/prenotazioni" matTooltip="Aggiungi o elimina una prenotazione"
+           (click)="sidenav.toggle()">
+          <span class="label">Prenotazioni</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enablePasseggeroActions">
+        <a mat-list-item routerLink="/genitore/mappa-fermate" matTooltip="Visualizza le fermate sulla mappa"
+           (click)="sidenav.toggle()">
+          <span class="label">Mappa</span>
+        </a>
+      </div>
+
+
+      <div [hidden]="!enableAccompagnatoreActions">
+        <a mat-list-item routerLink="/accompagnatore/presenze" matTooltip="Visualizza i bambini presenti alle corse"
+           (click)="sidenav.toggle()">
+          <span class="label">Presenze</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enableAccompagnatoreActions">
+        <a mat-list-item routerLink="/accompagnatore/disponibilita"
+           matTooltip="Segnala o elimina la tua disponibilità per una corsa"
+           (click)="sidenav.toggle()">
+          <span class="label">Disponibilità</span>
+        </a>
+      </div>
+
+
+      <div [hidden]="!enableAdminActions">
+        <a mat-list-item routerLink="/amministratore/turni" matTooltip="Assegna i turni per le diverse corse"
+           (click)="sidenav.toggle()">
+          <span class="label">Turni</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enableMasterAdminActions">
+        <a mat-list-item routerLink="/amministratore/promuovi-declassa"
+           matTooltip="Promuovi accompagnatori ad amministratori,
+                       declassa amministratori ad accompagnatori"
+           (click)="sidenav.toggle()">
+          <span class="label">Gestione ruoli</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enableSegreteriaActions">
+        <a mat-list-item routerLink="/segreteria/registrazione-utenti"
+           matTooltip="Aggiungi nuovi utenti al sistema"
+           (click)="sidenav.toggle()">
+          <span class="label">Aggiunta utenti</span>
+        </a>
+      </div>
+
+      <div [hidden]="!enableLogout">
+        <a mat-list-item (click)="logout(); sidenav.toggle()">
+          <span class="label">Logout</span>
+        </a>
+      </div>
+
+    </mat-nav-list>
+  </mat-sidenav>
+  <!-- === SIDE MENU TOOLBAR === END -->
+
+  <!-- === HORIZONTAL MENU TOOLBAR === START -->
+  <mat-sidenav-content>
+
+    <mat-toolbar class="mat-toolbar mat-primary">
+
+      <div>
+        <button class="hamburger mat-button" mat-button (click)="sidenav.toggle()">
+          <mat-icon aria-hidden="false" aria-label="Example home icon" style="color: white">menu</mat-icon>
+        </button>
+      </div>
+
+      <div *ngIf="flagLoggedIn == false">
+        <a mat-button routerLink="home-page"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Home</a>
+      </div>
+      <div *ngIf="flagLoggedIn == true">
+        <a mat-button routerLink="home-user"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Home</a>
+      </div>
+
+     <!-- <div [hidden]="enableLogout">
+        <a mat-button routerLink="/registration-form"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Iscriviti</a>
+      </div>-->
+
+      <div [hidden]="enableLogout">
+        <a mat-button routerLink="/login-form"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Accedi</a>
+      </div>
+
+
+      <div [hidden]="flagLoggedIn == false || !enablePasseggeroActions">
+        <a mat-button routerLink="/genitore/profilo" [disabled]="!enablePasseggeroActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Profilo</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false || !enablePasseggeroActions">
+        <a mat-button routerLink="/genitore/prenotazioni" [disabled]="!enablePasseggeroActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Prenotazioni</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false || !enablePasseggeroActions">
+        <a mat-button routerLink="/genitore/mappa-fermate" [disabled]="!enablePasseggeroActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Mappa</a>
+      </div>
+
+
+      <div [hidden]="flagLoggedIn == false || !enableAccompagnatoreActions">
+        <a mat-button routerLink="/accompagnatore/disponibilita" [disabled]="!enableAccompagnatoreActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Disponibilità</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false ||!enableAccompagnatoreActions">
+        <a mat-button routerLink="/accompagnatore/presenze" [disabled]="!enableAccompagnatoreActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Presenze</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false ||!enableAdminActions">
+        <a mat-button routerLink="/amministratore/turni" [disabled]="!enableAdminActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Turni</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false || !enableMasterAdminActions">
+        <a mat-button routerLink="/amministratore/promuovi-declassa" [disabled]="!enableMasterAdminActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Gestione ruoli</a>
+      </div>
+
+      <div [hidden]="flagLoggedIn == false || !enableSegreteriaActions">
+        <a mat-button routerLink="/segreteria/registrazione-utenti" [disabled]="!enableSegreteriaActions"
+           class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Aggiunta utenti</a>
+      </div>
+
+
+      <div [hidden]="!enableLogout">
+        <button mat-button [disabled]="false" (click)="logout();"
+                class="docs-navbar-hide-small docs-button mat-button ng-star-inserted">Logout</button>
+      </div>
+
+      <!-- Here html code used for communicate if new notifications have been sent. -->
+      <div *ngIf="flagLoggedIn && !enableSegreteriaActions">
+        <div *ngIf="flagNotification else noNotifiche">
+          <mat-icon matTooltip="{{numberOfNotification === 1 ? 'Hai una nuova comunicazione'
+                               : 'Hai ' + numberOfNotification.toString() + ' nuove comunicazioni'}}"
+                    [matBadge]="numberOfNotification.toString()" matBadgeColor="warn"
+                    (click)="readNotifications(true)" class="campana-notifiche">
+            notifications
+          </mat-icon>
+        </div>
+        <ng-template #noNotifiche>
+          <mat-icon matTooltip="Attualmente non hai nuove comunicazioni" class="campana-notifiche"
+                    (click)="readNotifications(true)">
+            notifications
+          </mat-icon>
+        </ng-template>
+      </div>
+
+      <span style="flex: 1 1 auto;"></span>
+
+      <div *ngIf="flagLoggedIn" style="font-size: small; float: end; margin: 0 15px 0 0; text-align: center">
+        <!--<mat-label>{{getUserNomeCognome()}}</mat-label>-->
+        <button class="user-button" (click)="openUserDialog()"
+                matTooltip="{{getUserNomeCognome()}}&#13;{{getUserEmail()}}">
+          {{getUserInitials()}}
+        </button>
+        <!--<mat-tooltip-component>
+          {{getUserNomeCognome()}}<br/>{{getUserEmail()}}
+        </mat-tooltip-component>-->
+      </div>
+      <!-- </ng-template> -->
+
+    </mat-toolbar>
+
+    <!--    <div class="bg"></div>-->
+
+    <main class="bg">
+      <!-- class="bg"-->
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+  <!-- === HORIZONTAL MENU TOOLBAR === END -->
+
+</mat-sidenav-container>
+
+<!-- Toast raised when a new available notification is received. -->
+<div [hidden]="!flagNotification">
+  <ng2-toasty></ng2-toasty>
+  <simple-notifications></simple-notifications>
+</div>

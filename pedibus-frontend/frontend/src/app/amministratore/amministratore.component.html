@@ -1,0 +1,41 @@
+<div class="bg-image"></div>
+<div class="user-main-div">
+
+  <div class="pagina-corrente">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="azioni">
+    <mat-card class="azione" routerLink="turni" routerLinkActive="router-link-active">
+      <mat-card-title>Turni</mat-card-title>
+      <mat-card-content>
+        <p>Assegna i turni per le diverse corse</p>
+        <!-- Definisci i turni degli accompagnatori per ciascuna corsa-->
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="ruolo === ruoliValues.amministratoreMaster"
+              class="azione" routerLink="promuovi-declassa" routerLinkActive="router-link-active">
+      <mat-card-title>Gestione Ruoli</mat-card-title>
+      <mat-card-content>
+        <p>Modifica il ruolo di altri utenti</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!--<mat-card *ngIf="ruolo === ruoliValues.amministratoreMaster"
+              class="azione" routerLink="registrazione-utenti" routerLinkActive="router-link-active">
+      <mat-card-title>Aggiunta Utenti</mat-card-title>
+      <mat-card-content>
+        <p>Aggiungi un nuovo utente al sistema</p>
+      </mat-card-content>
+    </mat-card>-->
+
+    <mat-card class="azione" routerLink="comunicazioni" routerLinkActive="router-link-active">
+      <mat-card-title>Comunicazioni</mat-card-title>
+      <mat-card-content>
+        <p>Visualizza le comunicazioni</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

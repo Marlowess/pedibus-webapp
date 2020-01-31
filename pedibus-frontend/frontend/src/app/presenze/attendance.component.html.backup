@@ -1,0 +1,163 @@
+<mat-card class="toolbar-prenotazioni-clear-mode">
+
+    <mat-card-header>
+      <mat-card-title>
+        Prenotazioni - Pedibus
+      </mat-card-title>
+    </mat-card-header>
+  
+  
+    <mat-divider></mat-divider>
+    <br>
+  
+    <mat-card-content style="bottom:100px;">
+      <div>
+        <mat-toolbar>
+  
+          <!-- <mat-toolbar-row>
+            Prenotazioni - Pedibus
+            
+          </mat-toolbar-row> -->
+          <mat-toolbar-row>
+  
+            <div *ngIf="linee != null">
+              <mat-form-field class="seleziona-linea">
+                <mat-select placeholder="Seleziona Linea" [formControl]="position">
+                  <mat-option *ngFor="let id_linea of linee " [value]="id_linea"
+                    (click)="getPresenzeByIdAndTime(position.value)">
+                    {{id_linea}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+  
+              <!-- <button class="button-clear-mode" mat-raised-button matTooltip="Ottieni prenotazioni della linea"
+                      [matTooltipPosition]="position.value"
+                      aria-label="Bottone che serve per ottenere tutte le prenotazioni di una linea"
+                      (click)="getPresenzeByIdAndTime(position.value)">
+                      Ottieni Presenze
+                    </button> -->
+            </div>
+  
+          </mat-toolbar-row>
+  
+        </mat-toolbar>
+      </div>
+    </mat-card-content>
+  
+  </mat-card>
+  
+  <mat-card *ngIf="linee != null && corsa != null" class="card-clear-mode">
+  
+    <mat-card-header class="card-header-clear-mode" *ngIf="corsa != null">
+      <div mat-card-avatar>
+        <mat-icon aria-hidden="true" aria-label="Linea">transfer_within_a_station</mat-icon>
+      </div>
+      <div style="top: 2; z-index: 3;">
+      <mat-card-title>Pedibus Linea: {{corsa['corsa'].linea_id}}</mat-card-title>
+      <mat-card-subtitle>Data corsa visualizzata: {{corsa['corsa'].date | date:'d/M/y' }}</mat-card-subtitle>
+    </div>
+      <!-- <div class="succ-prev-corsa">
+        <button class="button-clear-mode" (click)="getPrevCorsa()" aria-label="Ottieni corsa precedente"
+          alt="corsa precedente" matTooltip="corsa precedente">
+          <mat-icon class="style-icon" aria-hidden="true" aria-label="Corsa Precedente">
+            chevron_left
+          </mat-icon>
+        </button>
+        <button class="button-clear-mode" (click)="getSuccCorsa()" aria-label="Ottieni corsa successiva"
+          alt="corsa successiva" matTooltip="corsa successiva">
+          <mat-icon class="style-icon" aria-hidden="true" aria-label="Prossima corsa">
+            chevron_right
+          </mat-icon>
+        </button>
+      </div> -->
+      <div style="align-items: flex-end; top:1; z-index: 2;">
+          <mat-paginator *ngIf="corsa != null" [length]="numero_corse" [pageSize]="1" [pageIndex]="corsa.pos"
+          (page)="pageEvent = getServerData($event)">
+        </mat-paginator>
+      </div>
+      
+    </mat-card-header>
+  
+    <mat-card-content class="card-content-clear-mode">
+      <mat-tab-group mat-align-tabs="center" animationDuration="0ms">
+  
+        <mat-tab label="Andata">
+          <ng-template mat-tab-label>Andata</ng-template>
+          <ng-template matTabContent>
+  
+            <mat-card class="list-corse" *ngFor="let fermata of corsa['corsa'].fermate_andata">
+  
+              <mat-card-header>
+                <div mat-card-avatar>
+                  <!-- <mat-icon aria-hidden="true" aria-label="Linea">my_location</mat-icon> -->
+                  <mat-icon aria-hidden="true" aria-label="Linea">place</mat-icon>
+                  <mat-icon aria-hidden="true" aria-label="ora-passaggio">alarm</mat-icon>
+                </div>
+                <mat-card-title>
+                  Indirizzo: {{fermata.address}}
+                </mat-card-title>
+                <mat-card-subtitle>
+                  Data corsa: {{corsa['corsa'].date | date:'d/M/y' }}<br>
+                  Passaggio fermata: {{fermata.time}}
+                </mat-card-subtitle>
+              </mat-card-header>
+  
+              <mat-card-content class="lista-passeggeri-fermata-clear-mode">
+                <div>
+                  <!-- <h4></h4> -->
+                  <span style="font-size:16px;">Passeggeri: </span><br><span
+                    *ngFor="let passeggero of ordinaPasseggeriAlfabeticamente(fermata.passeggeri_salgono); last as isLast"
+                    class="passeggero" [ngClass]="getClass(passeggero)"
+                    (click)="aggiornaStato(passeggero)">{{passeggero.nome | titlecase}}<span *ngIf="!isLast"
+                      style="color: black">, </span></span>
+  
+                </div>
+              </mat-card-content>
+  
+            </mat-card>
+            <!-- <mat-divider></mat-divider> -->
+  
+          </ng-template>
+        </mat-tab>
+  
+        <mat-tab label="Ritorno">
+  
+          <ng-template mat-tab-label>Ritorno</ng-template>
+          <ng-template matTabContent>
+  
+            <mat-card class="list-corse" *ngFor="let fermata of corsa['corsa'].fermate_ritorno">
+  
+              <mat-card-header>
+                <div mat-card-avatar>
+                  <!-- <mat-icon aria-hidden="true" aria-label="Linea">my_location</mat-icon> -->
+                  <mat-icon aria-hidden="true" aria-label="Linea">place</mat-icon>
+                  <mat-icon aria-hidden="true" aria-label="ora-passaggio">alarm</mat-icon>
+                </div>
+                <mat-card-title>
+                  Indirizzo: {{fermata.address}}
+                </mat-card-title>
+                <mat-card-subtitle>
+                  Data corsa: {{corsa['corsa'].date | date:'d/M/y' }}<br>
+                  Passaggio fermata: {{fermata.time}}
+                </mat-card-subtitle>
+              </mat-card-header>
+  
+              <mat-card-content class="lista-passeggeri-fermata-clear-mode">
+                <span style="font-size:16px;">Passeggeri: </span><br><span
+                  *ngFor="let passeggero of ordinaPasseggeriAlfabeticamente(fermata.passeggeri_salgono); last as isLast"
+                  class="passeggero" [ngClass]="getClass(passeggero)"
+                  (click)="aggiornaStato(passeggero)">{{passeggero.nome | titlecase}}<span *ngIf="!isLast"
+                    style="color: black">, </span></span>
+  
+              </mat-card-content>
+  
+            </mat-card>
+  
+          </ng-template>
+  
+        </mat-tab>
+  
+      </mat-tab-group>
+    </mat-card-content>
+  
+  </mat-card>

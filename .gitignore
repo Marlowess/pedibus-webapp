@@ -1,0 +1,70 @@
+HELP.md
+pedibus-backend/backend/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+### NODE ###
+pedibus-frontend/frontend/node_modules/
+pedibus-frontend/frontend/dist/
+pedibus-frontend/frontend/tmp/
+pedibus-frontend/frontend/out-tsc/
+
+# profiling files
+pedibus-frontend/frontend/chrome-profiler-events.json
+pedibus-frontend/frontend/speed-measure-plugin.json
+
+# IDEs and editors
+pedibus-frontend/frontend/.idea
+pedibus-frontend/frontend/.project
+pedibus-frontend/frontend/.classpath
+pedibus-frontend/frontend/.c9/
+pedibus-frontend/frontend/*.launch
+pedibus-frontend/frontend/.settings/
+pedibus-frontend/frontend/*.sublime-workspace
+
+# IDE - VSCode
+pedibus-frontend/frontend/.vscode/*
+!pedibus-frontend/frontend/.vscode/settings.json
+!pedibus-frontend/frontend/.vscode/tasks.json
+!pedibus-frontend/frontend/.vscode/launch.json
+!pedibus-frontend/frontend/.vscode/extensions.json
+pedibus-frontend/frontend/.history/*
+
+# misc
+pedibus-frontend/frontend/.sass-cache
+pedibus-frontend/frontend/connect.lock
+pedibus-frontend/frontend/coverage
+pedibus-frontend/frontend/libpeerconnection.log
+pedibus-frontend/frontend/npm-debug.log
+pedibus-frontend/frontend/yarn-error.log
+pedibus-frontend/frontend/testem.log
+pedibus-frontend/frontend/typings
+
+# System Files
+pedibus-frontend/frontend/.DS_Store
+pedibus-frontend/frontend/Thumbs.db

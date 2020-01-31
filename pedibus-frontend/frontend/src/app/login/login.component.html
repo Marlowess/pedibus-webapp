@@ -1,0 +1,75 @@
+<div class="bg-image"></div>
+<div class="login-form">
+  <mat-card class="text-center">
+    <mat-card-title>
+      <h1>Accedi</h1>
+    </mat-card-title>
+    <mat-divider></mat-divider>
+
+    <br>
+    <mat-card-content>
+      <div class="container">
+        <div>
+
+          <form [formGroup]="profileForm" #loginForm="ngForm"
+                (ngSubmit)="submitted ? onSubmit($event, loginForm) : $event.preventDefault()">
+            <!-- (ngSubmit)="onSubmit($event, loginForm) -->
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width">
+                <input matInput id="email" formControlName="email" required>
+                <mat-placeholder class="placeholder">Email</mat-placeholder>
+                <mat-error *ngIf="profileForm.invalid">{{getErrorMessage()}}</mat-error>
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['email'].hasError('required')
+                                && profileForm.controls['email'].touched"
+                         style="color: red; display: block; margin-top: -12px">
+                Campo richiesto
+              </mat-label>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="example-full-width">
+                <input matInput formControlName="password"
+                       [type]="hidePassword ? 'password' : 'text'" required>
+                <mat-placeholder class="placeholder">Password</mat-placeholder>
+
+                <!-- [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hidePassword" -->
+                <mat-icon matSuffix (click)="$event.preventDefault(); hidePassword = !hidePassword;"
+                          style="cursor: pointer; font-size: 15px">
+                  {{hidePassword ? 'visibility_off' : 'visibility'}}
+                </mat-icon>
+              </mat-form-field>
+              <mat-label *ngIf=" profileForm.controls['password'].hasError('required')
+                                && profileForm.controls['password'].touched"
+                         style="color: red; display: block; margin-top: -12px">
+                Campo richiesto
+              </mat-label>
+            </div>
+
+            <div style="margin-top: -8px;">
+              <mat-label *ngIf="loginFailed" style="color: red">
+                Wrong email and/or password
+              </mat-label>
+            </div>
+
+            <div>
+              <mat-label (click)="openDialogPwDimenticata()"
+                         style="cursor: pointer;">
+                Recupera password
+              </mat-label>
+            </div>
+
+            <div style="margin-top: 20px; margin-bottom: 4px">
+              <button class="btn" mat-raised-button [disabled]="!loginForm.form.valid"
+                      type="submit" (keyup.enter)="submitted = true" (click)="submitted = true">
+                Accedi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

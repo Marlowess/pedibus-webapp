@@ -1,0 +1,81 @@
+.message-no-direction {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-active {
+  display: block;
+  width: 98%;
+  /*padding: 7px;*/
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  /*-webkit-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.3) !important;*/
+  background-color: oldlace;
+  color: darkslategray;
+}
+
+.card-inactive {
+  display: block;
+  width: 98%;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  background: rgba(253, 245, 230, 0.5);
+  color: darkslategray;
+  /*-webkit-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.3) !important;*/
+}
+
+.rotate-180 {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.bambino {
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.prenotato-accompagnatore {
+  color: coral;
+  font-weight: normal;
+}
+
+.prenotato-accompagnatore-preso {
+  color: coral;
+  font-weight: bold;
+}
+
+.prenotato-genitore {
+  color: #00A0C7; /*#00A0C7*/
+  font-weight: normal;
+}
+
+.prenotato-genitore-preso {
+  color: #00A0C7; /*#00A0C7*/
+  font-weight: bold;
+}
+
+.non-prenotato {
+  color: darkslategray;
+  font-weight: normal;
+}
+
+/* .non-prenotato-registrato {
+  color: darkslategray;
+  font-weight: bold;
+} */
+
+.export-icon {
+  color: oldlace;
+  font-size: 17px;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: sub !important;
+  margin-right: 3px;
+}
+
+.fermata-no-turno {
+  transform: scale(0.85);
+}

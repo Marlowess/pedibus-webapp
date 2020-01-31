@@ -1,0 +1,53 @@
+<div class="text" *ngIf="data.dir === '0'">
+  <h1 mat-dialog-title style="margin-bottom: 12px">{{data.bambino}} è partito in<br/>{{data.fermata}}?</h1>
+  <mat-divider></mat-divider>
+  <div style="margin: 12px 0 18px 0 !important;">
+    <mat-label style="text-align: center !important;">
+      Confermando creerai una prenotazione
+      <br>
+      per <div style="text-align: center; margin: 3px 0 3px 0; display: inline-block">
+        <span class="important-text-element">{{data.bambino}}</span>
+      </div> all'andata
+      <br>
+      da <div style="text-align: center; margin: 3px 0 3px 0; display: inline-block">
+        <span class="important-text-element">{{data.fermata}}</span>
+      </div> a scuola
+      <br>
+      e comunicherai ai suoi genitori
+      <br>
+      che è presente alla corsa di andata
+    </mat-label>
+  </div>
+</div>
+
+<!-- <div class="text" *ngIf="data.dir === '1'"> -->
+<div class="text" *ngIf="data.dir == DIRECTION.BACKWARD">
+  <h1 mat-dialog-title style="margin-bottom: 12px">{{data.bambino}} è presente alla corsa?</h1>
+  <mat-divider></mat-divider>
+  <div style="margin: 12px 0 18px 0 !important;">
+
+    <mat-label>
+      Confermando creerai una prenotazione
+      <br>
+      per <div style="text-align: center; margin: 3px 0 6px 0; display: inline-block">
+        <span class="important-text-element">{{data.bambino}}</span>
+      </div> al ritorno da scuola a
+      <br>
+      <mat-select style="margin-bottom: 3px" class="fermata-select" placeholder="{{fermataArrivoNome}}">
+        <mat-option *ngFor="let fermata of data.fermate" [value]="fermata" (click)="onSelectArrivo(fermata)">
+          {{ fermata.indirizzo }}
+        </mat-option>
+      </mat-select>
+      <br>
+      e comunicherai ai suoi genitori
+      <br>
+      che è presente alla corsa di ritorno
+    </mat-label>
+
+  </div>
+</div>
+
+<div style="margin-bottom: -10px;">
+  <button mat-raised-button class="btn" [mat-dialog-close]="conferma()">Conferma</button>
+  <button mat-raised-button class="btn annulla" style="margin-left: 8px" (click)="annulla()">Annulla</button>
+</div>

@@ -1,0 +1,148 @@
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {DialogData} from '../dialog-presenze/dialog-presenze';
+import {AmministratoreService} from '../services/amministratore-service/amministratore.service';
+import {Subscription} from 'rxjs';
+import {FermataConAccompagnatori} from '../domain/fermata-con-accompagnatori';
+import {Accompagnatore} from '../domain/accompagnatore';
+
+@Component({
+  selector: 'app-dialog-turno',
+  templateUrl: './dialog-turno.component.html',
+  styleUrls: ['./dialog-turno.component.css']
+})
+export class DialogTurnoComponent implements OnInit {
+
+  constructor(
+    public dialogRef: MatDialogRef<DialogTurnoComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    // private amministratoreService: AmministratoreService
+  ) { }
+
+  // public _data: any;
+  fermataSalitaID: string;
+  fermataSalitaNome: string;
+  fermataDiscesaID: string;
+  fermataDiscesaNome: string;
+  // public subscription: Subscription;
+  disabled = true;
+  new = false;
+  accompagnatore: Accompagnatore;
+  nomeCognome: string;
+
+  // tutte le possibili fermate fra cui potrei scegliere
+  fermateSalita: FermataConAccompagnatori[];
+  fermateDiscesa: FermataConAccompagnatori[];
+
+  // le fermate che posso scegliere dopo averne selezionata una nell'altro campo
+  fermateS: FermataConAccompagnatori[];
+  fermateD: FermataConAccompagnatori[];
+
+  ngOnInit() {
+    if (this.data.is_new) {
+      // nuovo turno: mostra solo la selezione per le fermate e il bottone 'annulla' e il bottone 'ok'
+      this.new = true;
+    } else {
+      /* turno da modificare o eliminare: mostra il bottone per eliminare il turno,
+       * la selezione per le fermate il bottone 'annulla' e il bottone 'ok' */
+      this.new = false;
+    }
+    this.accompagnatore = this.data.accomp;
+    this.nomeCognome = this.accompagnatore.nome + ' ' + this.accompagnatore.cognome;
+    this.fermateSalita = this.data.ferm.slice(0, this.data.ferm.length - 1);
+    // console.log('fermate possibili per salire: '); // [0, 1, 2]
+    this.fermateSalita.forEach(f => .log(f.nome));
+    // this.fermateS = this.fermateSalita;
+
+    if (this.accompagnatore.fermataPartenzaId !== null) {
+      this.fermataSalitaID = this.accompagnatore.fermataPartenzaId;
+      this.fermataSalitaNome = this.fermateSalita.find(fermata =>
+        fermata.id === this.accompagnatore.fermataPartenzaId).nome;
+    } else {
+      this.fermataSalitaID = this.fermateSalita[0].id;
+      this.fermataSalitaNome = this.fermateSalita[0].nome;
+    }
+    // const fermataSalita = this.fermateS.find(fermata => fermata.id === this.fermataSalitaID);
+    this.fermateDiscesa = this.fermateSalita.slice(
+      this.fermateSalita.findIndex(f => f.id === this.fermataSalitaID) + 1, this.fermateSalita.length
+    );
+    this.fermateDiscesa.push(this.data.ferm[this.data.ferm.length - 1]);
+    // console.log('fermate possibili per scendere: '); // [1, 2, 3]
+    this.fermateDiscesa.forEach(f => console.log(f.nome, f.id));
+    // this.fermateD = this.fermateDiscesa;
+
+    if (this.accompagnatore.fermataArrivoId !== null) {
+      this.fermataDiscesaID = this.accompagnatore.fermataArrivoId;
+      // console.log(this.fermataDiscesaID);
+      this.fermataDiscesaNome = this.fermateDiscesa.find(fermata =>
+        fermata.id === this.accompagnatore.fermataArrivoId).nome;
+    } else {
+      this.fermataDiscesaID = this.fermateDiscesa[0].id;
+      this.fermataDiscesaNome = this.fermateDiscesa[0].nome;
+    }
+
+    this.fermateD = this.fermateDiscesa.slice(
+      this.fermateSalita.findIndex(f => f.id === this.fermataSalitaID), this.fermateDiscesa.length
+    );
+    this.fermateS = this.fermateSalita.slice(
+      0, this.fermateDiscesa.findIndex(f => f.id === this.fermataDiscesaID) + 1
+    );
+  }
+
+  onSelectSalita(fermata: FermataConAccompagnatori) {
+    const indiceSalita = this.fermateSalita.indexOf(fermata);
+    this.fermateD = this.fermateDiscesa.slice(indiceSalita, this.fermateDiscesa.length);
+    // const fermataDiscesa = this.fermateD[indiceSalita];
+    // console.log('nuove possibili fermate discesa: ');
+    this.fermateD.forEach(f => console.log(f.nome));
+    if (fermata.id >= this.fermataDiscesaID) {
+      /*se scelgo come salita una fermata successiva a quella di discesa
+      correggo in automatico quella di discesa mettendola a quella successiva*/
+      const discesa = this.fermateD[indiceSalita];
+      this.fermataDiscesaID = discesa.id;
+      this.fermataDiscesaNome = discesa.nome;
+    }
+    this.fermataSalitaID = fermata.id;
+    this.fermataSalitaNome = fermata.nome;
+    this.disabled = false;
+  }
+
+  onSelectDiscesa(fermata: FermataConAccompagnatori) {
+    const indiceDiscesa = this.fermateDiscesa.indexOf(fermata);
+    this.fermateS = this.fermateSalita.slice(0, indiceDiscesa + 1);
+    // const fermataDiscesa = this.fermateD[indiceSalita];
+    // console.log('nuove possibili fermate salita:');
+    this.fermateS.forEach(f => console.log(f.nome));
+    if (fermata.id <= this.fermataSalitaID) {
+      /*se scelgo come discesa una fermata precedente a quella di salita
+      correggo in automatico quella di salita mettendola a quella precedente*/
+      const fermataSalita = this.fermateS[indiceDiscesa];
+      this.fermataSalitaID = fermataSalita.id;
+      this.fermataSalitaNome = fermataSalita.nome;
+    }
+    this.fermataDiscesaID = fermata.id; // .fermataID
+    this.fermataDiscesaNome = fermata.nome;
+    this.disabled = false;
+  }
+
+  ok() {
+    return {
+      pick: true,
+      fermataSalitaID: this.fermataSalitaID,
+      fermataDiscesaID: this.fermataDiscesaID
+    };
+  }
+
+  annulla(): void {
+    this.dialogRef.close();
+  }
+
+  elimina() {
+    return {
+      pick: true,
+      fermataSalitaID: null,
+      fermataDiscesaID: null
+    };
+  }
+
+}

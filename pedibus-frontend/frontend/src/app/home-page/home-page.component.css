@@ -1,0 +1,60 @@
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.home-page-main-div {
+  position: absolute;
+  top: 180px;
+  left: 140px;
+  /*width: 31%;*/
+  width: 300px;
+}
+
+h1 {
+  color: #0098bd;
+}
+
+.hr-light{
+  clear:both;
+  border: 3px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    #00A0C7,
+    rgba(0,160,199,0)
+  );
+}
+
+h5 {
+  line-height: 1.7;
+  color: rgb(110, 104, 99);
+}
+
+.mat-button {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  background: rgba(0,160,199,0.5);
+  /*background-color: #00A0C7;*/
+  color: cornsilk;
+  font-size: 15px;
+  width: 140px;
+  /*opacity: 0.5;*/
+}
+
+.mat-button:hover {
+  background-color: #00A0C7;
+  color: cornsilk;
+  opacity: 1;
+}
+
+/*
+@media (max-width: 740px) {
+  .full-height,
+  .full-height body,
+  .full-height .home-page-main-div,
+  .full-height .home-page-main-div .view {
+    height: 1040px;
+  }
+}
+*/

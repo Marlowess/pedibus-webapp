@@ -1,0 +1,32 @@
+body {
+    background-color: rgb(224,244,255);
+    min-width: 350px;
+    color: dodgerblue;
+}
+.btn {
+    background-color: dodgerblue;
+    color: white;
+    font-size: 130%;
+    width: 130px;
+    height: 50px;
+    /*border: solid;
+    border-color: royalblue;*/
+    border-radius: 25px;
+}
+.btn:hover {
+    box-shadow: 0 0 11px royalblue;
+    background-color: royalblue;
+    color: white;
+    cursor: pointer;
+}
+hr{
+    clear:both;
+    margin-left: 80px;
+    margin-right: 80px;
+    margin-top: 35px;
+    border: 20px;
+    height: 6px;
+    background-image: linear-gradient(to right, rgb(224,244,255), transparent, rgb(224,244,255)), linear-gradient(transparent, dodgerblue);
+    background-image: -moz-linear-gradient(to right, rgb(224,244,255), transparent, rgb(224,244,255)), -webkit-linear-gradient(transparent, dodgerblue);
+    background-image: -ms-linear-gradient(to right, rgb(224,244,255), transparent, rgb(224,244,255)),  -webkit-linear-gradient(transparent, dodgerblue);
+}

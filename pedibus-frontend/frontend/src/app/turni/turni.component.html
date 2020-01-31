@@ -1,0 +1,180 @@
+<!--<div style="max-height: 70%;">-->
+<mat-datepicker #dpTurni touchUi disabled="false" [startAt]="startDate" ></mat-datepicker>
+<mat-card class="user-main-card">
+
+  <div class="header">
+    <mat-card-title>
+      <h2 class="titolo">Turni</h2>
+      <mat-card-subtitle>
+        <div>
+          <mat-label class="linea-label">Linea:</mat-label>
+          <mat-select class="linea-select" placeholder="{{selectedLinea}}"
+                      (selectionChange)="onSelectLinea($event.source.value)">
+            <mat-option class="linea-option" *ngFor="let linea of linee" [value]="linea">
+              {{ linea }}
+            </mat-option>
+          </mat-select>
+        </div>
+
+        <div style="margin-left: -8px; margin-bottom: 5px">
+          <mat-datepicker-toggle matSuffix [for]="dpTurni" (click)="dpIsOpen = true"></mat-datepicker-toggle>
+          <input [min]="minDate" [max]="maxDate" [matDatepicker]="dpTurni" placeholder="{{date | date: 'dd/MM/yyyy'}}"
+                 class="date-input" disabled (dateChange)="onSelectDate($event)">
+        </div>
+
+        <div *ngIf="showDirettiva && !tooLateRitorno && !noCorse" class="direttiva" style="margin-left: 4px">
+          Clicca sul nome di un accompagnatore per assegnargli un turno
+        </div>
+        <!--*ngIf="showDirettiva && !noCorse -->
+
+        <!--<div *ngIf="!noCorse && tooLateAndata && !showTooLateRitorno" class="direttiva warning">
+          Turni non più modificabili all'andata
+        </div>-->
+        <div *ngIf="!noCorse && tooLateRitorno" class="direttiva" style="width: 180px;">
+          <!-- -->
+          Turni non più modificabili<br>in questa data
+        </div>
+
+        <button *ngIf="showConsolidaTurno && !tooLateRitorno" class="btn consolida-turno" mat-raised-button
+                (click)="consolidaTurno()">
+          Consolida<br/>turno
+        </button>
+        <!--*ngIf="showConsolidaTurno"-->
+
+      </mat-card-subtitle>
+    </mat-card-title>
+  </div>
+
+  <mat-card-content style="height: 100%">
+
+    <div *ngIf="noCorse || corsa === null">
+    <!--<div *ngIf="noCorse || corsa === null; else fermateCorsa">-->
+      <h3 class="no-corsa">
+        Nessuna corsa per la linea {{selectedLinea}} in data {{date | date: 'dd/MM/yyyy'}}
+      </h3>
+    </div>
+
+    <!--<ng-template #fermateCorsa style="height: 100%">-->
+    <div *ngIf="!noCorse && corsa !== null" style="height: 100%">
+      <mat-tab-group #tabGroup mat-align-tabs="center" animationDuration="0ms" style="height: 100%">
+        <!--disableRipple-->
+
+        <mat-tab label="Andata" style="height: 100%">
+          <div class="user-main-card-content vertically-scrollable-content-white"
+               style="text-align: left;">
+            <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch"
+                 style="margin-bottom: 4px">
+
+              <mat-card *ngFor="let fermata of corsa.fermateConAccAndata; let k = index;"
+                        [ngClass]="tooLateAndata ? 'card-inactive' : 'card-active'"
+                        [matTooltipDisabled]="!tooLateAndata"
+                        matTooltip="Turni non più modificabili">
+                <mat-card-header>
+                  <div mat-card-avatar>
+                    <mat-icon>place</mat-icon>
+                    <mat-icon class="clock">schedule</mat-icon>
+                  </div>
+                  <mat-card-title class="card-fermata-title">
+                    <span class="luogo-item">{{ fermata.nome }}</span>
+                    <div class="spacer-vertical">
+                      <div class="mask"></div>
+                    </div>
+                    <span class="indirizzo">{{fermata.indirizzo}}</span>
+                  </mat-card-title>
+                  <mat-card-subtitle class="orario-item">{{ fermata.orario }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="lista-persone-fermata">
+                  <div>
+                    <span *ngFor="let accompagnatore of ordinaAccompagnatori(fermata.accompagnatori);
+                            let l = index;" class="accompagnatore-item"
+                          [ngStyle]="{'cursor': !tooLateAndata ? 'pointer' : 'default'}">
+                      <span *ngIf="!tooLateAndata"
+                            [ngClass]="isAssegnatoOrConfermato(k, l, 0)" (click)="onClick(k, l, 0)"
+                            matTooltip="{{stato}}">
+                        <span>{{accompagnatore.nome}}</span>&nbsp;<span>{{accompagnatore.cognome}}</span>
+                      </span>&nbsp;
+                      <span *ngIf="tooLateAndata">
+                        <span>{{accompagnatore.nome}}</span>&nbsp;<span>{{accompagnatore.cognome}}</span>
+                      </span>
+                    </span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Ritorno" style="height: 100%">
+          <div class="user-main-card-content vertically-scrollable-content-white"
+               style="text-align: left;">
+            <div fxLayout="column" fxLayoutGap="8px" fxLayoutAlign="space-around stretch"
+                 style="margin-bottom: 4px">
+              <mat-card *ngFor="let fermata of corsa.fermateConAccRitorno; let i = index;"
+                        [ngClass]="tooLateRitorno ? 'card-inactive' : 'card-active'"
+                        [matTooltipDisabled]="!tooLateRitorno"
+                        matTooltip="Turni non più modificabili">
+                <mat-card-header>
+                  <div mat-card-avatar>
+                    <mat-icon>place</mat-icon>
+                    <mat-icon class="clock">schedule</mat-icon>
+                  </div>
+                  <mat-card-title class="card-fermata-title">
+                    <span class="luogo-item">{{ fermata.nome }}</span>
+                    <div class="spacer-vertical">
+                      <div class="mask"></div>
+                    </div>
+                    <span class="indirizzo">{{fermata.indirizzo}}</span>
+                  </mat-card-title>
+                  <mat-card-subtitle class="orario-item">{{ fermata.orario }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="lista-persone-fermata">
+                  <div>
+                    <span *ngFor="let accompagnatore of ordinaAccompagnatori(fermata.accompagnatori);
+                          let j = index;" class="accompagnatore-item"
+                          [ngStyle]="{'cursor': !tooLateRitorno ? 'pointer' : 'default'}">
+                      <span *ngIf="!tooLateRitorno"
+                            [ngClass]="isAssegnatoOrConfermato(i, j, 1)" (click)="onClick(i, j, 1)"
+                            matTooltip="{{stato}}">
+                        <span>{{accompagnatore.nome}}</span>&nbsp;<span>{{accompagnatore.cognome}}</span>
+                      </span>&nbsp;
+                      <span *ngIf="tooLateRitorno">
+                        <span>{{accompagnatore.nome}}</span>&nbsp;<span>{{accompagnatore.cognome}}</span>
+                      </span>
+                    </span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+<!--DEBUG_MODE_TURNI_COMPONENT SECTION -->
+<div *ngIf="DEBUG_MODE_TURNI_COMPONENT == true">
+  <h1>Debug Div Turnin Component</h1>
+  new linea: {{ debugTypeLineaNew }} <br>
+  curr linea: {{ debugTypeLineaCurr }} <br>
+  new date: {{ debugTypeDateNew }} <br>
+  curr date: {{ debugTypeDateCurr }} <br>
+
+  Number of notifications received: {{ debugCounterNotifications }} <br>
+  * Notification message: <br> {{ notificationMessage | json }} <br>
+
+  <br>
+  - turno updated data: {{ dataTurnoUpdate }}<br>
+  - corsa data:         {{ this.corsa.data }}<br>
+  - nome linea:         {{ nomeLineaTurnoUpdate }}<br>
+  - corsa nome linea:   {{ corsa.nomeLinea }}<br>
+  * Data:<br>
+  {{ debugDataFromNotificationTurni | json }}<br>
+
+  - Numero accompagnatori con turno: {{accompagnatoriTurni.length}}<br>
+  <br>
+  * corsa <br> {{ corsa | json }}<br>
+  - fermate <br> {{ fermate | json }}
+</div>
