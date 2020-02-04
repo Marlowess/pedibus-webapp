@@ -27,6 +27,7 @@ import { MappaFermateComponent } from './mappa-fermate/mappa-fermate.component';
 import {AccessoNegatoComponent} from './accesso-negato/accesso-negato.component';
 import {SegreteriaComponent} from './segreteria/segreteria.component';
 import {NuovaPasswordComponent} from './nuova-password/nuova-password.component';
+import {AvvisoLogoutComponent} from './avviso-logout/avviso-logout.component';
 
 const routes: Routes = [
   { path: 'home-page', component: HomePageComponent },
@@ -35,6 +36,7 @@ const routes: Routes = [
   { path: 'registration-form/:token',  component: RegistrationFormComponent },
   { path: 'sostituzione-password/:token',  component: NuovaPasswordComponent },
   { path: 'login-form', component: LoginComponent },
+  { path: 'avviso-logout', component: AvvisoLogoutComponent },
 
   {
     path: 'accesso-negato', component: AccessoNegatoComponent,

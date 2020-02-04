@@ -17,6 +17,7 @@ import { AuthService } from '../auth/auth.service';
 import { websocketInfo } from '../../config/websocket-conf';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../notification-service/notification.service';
+// import JsApiReporter = jasmine.JsApiReporter;
 
 /* =========================================================================================== */
 @Injectable({
@@ -35,8 +36,10 @@ export class WebsocketNotificationService implements OnDestroy {
    * @param authService AuthService
    * @param notificationService NotificationService
    */  
-  constructor(private authService: AuthService,
-    private notificationService: NotificationService) {
+  constructor(
+    private authService: AuthService,
+    private notificationService: NotificationService
+    ) {
     const msg = `[WebsocketNotificationService] constructor()`;
     // console.log(`${msg}: running!`);
   }
@@ -76,20 +79,25 @@ export class WebsocketNotificationService implements OnDestroy {
       return;
     }
 
-    if (this.stompClient.connected == true) {
+    if (this.stompClient.connected === true) {
       // console.info(`${msg}: stompClient is already connected!`);
       return;
     }
 
-    const token = this.authService.getToken()
+    const token = this.authService.getToken();
     // console.log(`${msg}: ${token}`);
 
     const tmpNotificationService = this.notificationService;
+    const authServiceConst = this.authService;
     this.stompClient.connect({ 'Authorization': `${token}` }, function (frame) {
       // console.log('Connected: ' + frame);
       this.subscribe(`${websocketInfo.queueName}`, function (text) {
+        /*if (JSON.parse(text.body).topic === 'Cambiamento ruolo') {
+          authServiceConst.logout('avviso-logout');
+        }*/
         // console.log(`${msg}: stompClient receive: ${text.body.toString()}!`);
         tmpNotificationService.signalNotification( JSON.parse(text.body) );
+
       });
     });
 
@@ -98,7 +106,7 @@ export class WebsocketNotificationService implements OnDestroy {
   /* =========================================================================================== */
   /**
    * Metodo pubblico `disconnectWebSocket` esegue la chiusura del websocket quando il componente
-   * all'interno del quale viene instanziato smette di essere utilizzato e viene distrutto perché 
+   * all'interno del quale viene instanziato smette di essere utilizzato e viene distrutto perché
    * l'utente effettua un operazione di logout oppure di cambio della pagina web da visitare nel sito.
    */
   public disconnectWebSocket() {
@@ -109,7 +117,7 @@ export class WebsocketNotificationService implements OnDestroy {
       // console.warn(`${msg}: No stompClient has been created & connected before!`);
       return;
     }
-    if (this.stompClient.connected == true) {
+    if (this.stompClient.connected === true) {
       this.stompClient.disconnect(function () {
         // console.log('stompClient is doing disconnect!');
       });
