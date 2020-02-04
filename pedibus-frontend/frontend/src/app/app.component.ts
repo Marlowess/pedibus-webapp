@@ -65,6 +65,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   // - Private Instance's attributes
   private allowedLog = true;
 
+  public subGetNotificaction: Subscription;
+
   /* ============================================================================================= */
   constructor(
     private managerNavBar: ManagerNavbarService,
@@ -117,6 +119,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // - Here, some necessary subscriptions.
     this.subscribeToKnowingAmILogged();
+
+    /*this.subGetNotificaction =
+      this.notificationService.getNotificationPushNewComunicazione()
+        .subscribe({
+          next: (data) => {
+
+            console.log('======================== CI SEI =============');
+            if (data.topic === 'Cambiamento ruolo') {
+              this.logout('avviso-logout');
+            }
+          },
+          error: (err) => { console.error(`${JSON.stringify(err)}`); },
+          complete: () => { console.error(`ngAfterViewInit() complete`); }
+        });*/
+
   }
 
   /* ============================================================================================= */
@@ -177,6 +194,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (data != null && !(data instanceof Boolean) && data !== '') {
             this.flagNotification = true;
             this.numberOfNotification += 1;
+
+            console.log('======================== CI SEI =============');
+            if (data.topic === 'Cambiamento ruolo') {
+              console.log('=============== REDIRECT =====');
+              this.logout('avviso-logout');
+            }
 
             if (this.router.url.endsWith('comunicazioni') === true) {
               this.notificationService.signalNotificationPushNewComunicazione(data);
@@ -374,7 +397,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
    * Lets user logout from web site, and lets to redirect toward web site's home page, while
    * it reinitializes all attributes both for component's function and for UI.
    */
-  public logout() {
+  public logout(redirectUrl: string = 'home-page') {
     // const msg = '[AppComponent]: logout()';
     // console.log(`${msg}: running!`);
 
@@ -397,7 +420,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.flagBellZeroed = false;
 
     this.closeAllSubscriptionsWhenLogout();
-    this.authService.logout();
+    this.authService.logout(redirectUrl);
   }
 
   /* ============================================================================================= */

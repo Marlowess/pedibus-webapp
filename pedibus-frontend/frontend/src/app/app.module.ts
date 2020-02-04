@@ -47,6 +47,8 @@ import { AccompagnatoreComponent } from './accompagnatore/accompagnatore.compone
 import { AmministratoreComponent } from './amministratore/amministratore.component';
 import { AppComponent } from './app.component';
 import { PresenzeComponent } from './presenze/presenze.component';
+import { AvvisoLogoutComponent } from './avviso-logout/avviso-logout.component';
+
 // tslint:disable-next-line:max-line-length
 import { DialogPresenzePartitiArrivatiComponent } from './dialogs/dialog-presenze-partiti-arrivati/dialog-presenze-partiti-arrivati.component';
 import { DialogPresenzeNuovaPrenotazione } from './dialogs/dialog-presenze-nuova-prenotazione/dialog-presenze-nuova-prenotazione.component';
@@ -136,6 +138,8 @@ registerLocaleData(localeIt, 'it');
     NuovaPasswordComponent,
 
     DialogRecuperaPasswordComponent,
+
+    AvvisoLogoutComponent
   ],
   imports: [
     BrowserModule,
