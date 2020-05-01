@@ -7,7 +7,7 @@ This course was provided in italian.
 - Requirements for running the program: Docker, Docker Compose
 
 ## Installation
-Run the script `docker_util.sh` in order to remove old images and containers. Then run `docker compose up` for installing and launching the program.
+Run the command `Makefile` in order to remove old images and containers and then install and run the program.
 ___
 Below are reported the project specifications (in italian).
 
