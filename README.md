@@ -4,7 +4,11 @@ Internet Application course project - A.Y. 2018/2019 - Politecnico di Torino
 This course was provided in italian.
 - Server: Java Spring framework, MongoDB
 - Client: Angular 7.3 framework, HTML, CSS
+- Requirements for running the program: Docker, Docker Compose
 
+## Installation
+Run the script `docker_util.sh` in order to remove old images and containers. Then run `docker compose up` for installing and launching the program.
+___
 Below are reported the project specifications (in italian).
 
 ## Descrizione
