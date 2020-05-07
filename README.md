@@ -1,4 +1,10 @@
 # Pedibus
+**Team**
+- **Stefano Brilli** - <a href="https://github.com/Marlowess">@Marlowess</a>
+- **Francesco Chiarlo** - <a href="https://github.com/franec94">@franec94</a>
+- **Caterina Oppici** - <a href="https://github.com/caterandom">@caterandom</a>
+- **Fabrizio Ronzino**
+---
 Internet Application course project - A.Y. 2018/2019 - Politecnico di Torino
 
 This course was provided in italian.
