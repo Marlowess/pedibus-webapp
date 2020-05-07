@@ -3,7 +3,7 @@
 - **Stefano Brilli** - <a href="https://github.com/Marlowess">@Marlowess</a>
 - **Francesco Chiarlo** - <a href="https://github.com/franec94">@franec94</a>
 - **Caterina Oppici** - <a href="https://github.com/caterandom">@caterandom</a>
-- **Fabrizio Ronzino**
+- **Fabrizio Ronzino** - <a href="https://github.com/fabrironzi">@fabrironzi</a>
 ---
 Internet Application course project - A.Y. 2018/2019 - Politecnico di Torino
 
