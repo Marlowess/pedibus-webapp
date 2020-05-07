@@ -24,7 +24,7 @@ export const configDatePicker = {
 };
 
 /** Maps constants */
-export const API_KEY_GOOGLE_MAPS = 'AIzaSyCOqPVs7YRlwOoG3xkXcGf800vdhdzRd4U';
+export const API_KEY_GOOGLE_MAPS = [YOUR_API_KEY];
 export const DEFAULT_COORDS: any = {
   lat: 45.0701176, // lat: 45.01,
   lng:  7.6800000// lng: 7.809007
